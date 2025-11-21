@@ -222,7 +222,7 @@ INSERT INTO orders (table_id, customer_id, status, total, people) VALUES
 (4, 19, 'EN_PROGRESO', 135.00, 4),
 (5, 20, 'COMPLETADO', 102.00, 3);
 
-INSERT INTO order_details (order_id, dish_id, quantity, unit_price, subtotal) VALUES
+INSERT INTO order_items (order_id, dish_id, quantity, unit_price, subtotal) VALUES
 (1, 1, 2, 18.50, 37.00),
 (1, 3, 1, 32.00, 32.00),
 (1, 9, 2, 8.00, 16.00),

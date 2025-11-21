@@ -101,7 +101,7 @@ CREATE TABLE orders (
     FOREIGN KEY (table_id) REFERENCES dining_tables (id)
 );
 
-CREATE TABLE order_details (
+CREATE TABLE order_items (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     order_id BIGINT NOT NULL,
     dish_id BIGINT NOT NULL,
