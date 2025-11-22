@@ -21,8 +21,6 @@ import com.qrio.order.repository.OrderItemRepository;
 import com.qrio.order.repository.OrderRepository;
 import com.qrio.shared.exception.ResourceNotFoundException;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -38,7 +36,7 @@ public class OrderService {
         return orderRepository.findList();
     }
 
-    public OrderDetailResponse getDetailById(@NotNull @Min(1) Long id) {
+    public OrderDetailResponse getDetailById(Long id) {
         OrderDetailResponse base = orderRepository.findDetailById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
 
@@ -72,7 +70,7 @@ public class OrderService {
     }
 
     @Transactional
-    public OrderListResponse update(@NotNull @Min(1) Long id, UpdateOrderRequest request) {
+    public OrderListResponse update(Long id, UpdateOrderRequest request) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
 
@@ -112,6 +110,7 @@ public class OrderService {
                 order.getStatus(),
                 order.getTotal(),
                 order.getPeople(),
+                
                 (long) order.getOrderItems().size());
     }
 }

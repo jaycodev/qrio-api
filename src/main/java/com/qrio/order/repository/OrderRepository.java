@@ -7,9 +7,6 @@ import com.qrio.order.dto.response.OrderDetailResponse;
 import com.qrio.order.dto.response.OrderListResponse;
 import com.qrio.order.model.Order;
 
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-
 import java.util.List;
 import java.util.Optional;
 
@@ -44,5 +41,5 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
         FROM Order o
         WHERE o.id = :id
     """)
-    Optional<OrderDetailResponse> findDetailById(@NotNull @Min(1) Long id);
+    Optional<OrderDetailResponse> findDetailById(Long id);
 }

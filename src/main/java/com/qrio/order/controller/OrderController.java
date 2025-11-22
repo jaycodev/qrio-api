@@ -13,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,7 +49,7 @@ public class OrderController {
     @GetMapping("/{id}")
     @Operation(summary = "Get an order by ID")
     public ResponseEntity<ApiSuccess<OrderDetailResponse>> get(
-            @PathVariable @NotNull @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
         OrderDetailResponse order = orderService.getDetailById(id);
         return ResponseEntity.ok(new ApiSuccess<>("Order found", order));
     }
@@ -66,7 +65,7 @@ public class OrderController {
     @PutMapping("/{id}")
     @Operation(summary = "Update an order by ID")
     public ResponseEntity<ApiSuccess<OrderListResponse>> update(
-            @PathVariable @NotNull @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
             @Valid @RequestBody UpdateOrderRequest request) {
         OrderListResponse result = orderService.update(id, request);
         return ResponseEntity.ok(new ApiSuccess<>("Order updated successfully", result));
