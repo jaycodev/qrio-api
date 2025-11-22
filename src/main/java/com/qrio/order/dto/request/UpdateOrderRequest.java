@@ -3,8 +3,10 @@ package com.qrio.order.dto.request;
 import java.util.List;
 
 import com.qrio.order.model.type.OrderStatus;
+import com.qrio.shared.validation.NoNullElements;
 import com.qrio.shared.validation.ValidEnum;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -25,5 +27,7 @@ public record UpdateOrderRequest(
 
     @NotNull(message = "Items are required")
     @NotEmpty(message = "Items cannot be empty")
+    @NoNullElements(message = "Items cannot contain null elements")
+    @Valid
     List<UpdateOrderItemRequest> items
 ) {}

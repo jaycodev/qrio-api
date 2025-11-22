@@ -4,7 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import com.qrio.order.model.type.OrderStatus;
+import com.qrio.shared.validation.NoNullElements;
 import com.qrio.shared.validation.ValidEnum;
+
+import jakarta.validation.Valid;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -37,5 +40,7 @@ public record CreateOrderRequest(
 
     @NotNull(message = "Items are required")
     @NotEmpty(message = "Items cannot be empty")
+    @NoNullElements(message = "Items cannot contain null elements")
+    @Valid
     List<CreateOrderItemRequest> items
 ) {}
