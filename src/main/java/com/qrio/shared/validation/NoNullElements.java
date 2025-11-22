@@ -12,8 +12,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface NoNullElements {
     String message() default "List cannot contain null elements";
-
     Class<?>[] groups() default {};
-
     Class<? extends Payload>[] payload() default {};
 }
