@@ -1,6 +1,5 @@
 package com.qrio.offer.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -41,7 +40,6 @@ public class OfferService {
         offer.setDescription(request.description());
         offer.setOfferPrice(request.offerPrice());
         offer.setActive(request.active());
-        offer.setCreatedAt(LocalDateTime.now());
 
         Offer saved = offerRepository.save(offer);
 

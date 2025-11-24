@@ -1,7 +1,6 @@
 package com.qrio.offer.model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -34,6 +33,4 @@ public class Offer {
 
     @Column(nullable = false)
     private Boolean active;
-
-    private LocalDateTime createdAt;
 }
