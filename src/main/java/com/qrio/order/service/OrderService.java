@@ -28,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 @Validated
 public class OrderService {
-
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
 
