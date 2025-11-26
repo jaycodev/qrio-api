@@ -24,7 +24,7 @@ public class CustomerService {
 
     @Transactional
     public CustomerResponse createCustomer(CreateCustomerRequest request) {
-        if (customerRepository.existsByUidFirebase(request.uidFirebase())) {
+        if (customerRepository.existsByFirebaseUid(request.uidFirebase())) {
             throw new IllegalArgumentException("Customer with this Firebase UID already exists");
         }
 
@@ -72,13 +72,13 @@ public class CustomerService {
         return mapToResponse(customer);
     }
 
-    @Transactional(readOnly = true)
-    public CustomerResponse getCustomerByFirebaseUid(String firebaseUid) {
-        Customer customer = customerRepository.findByFirebaseUid(firebaseUid)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("Customer not found with Firebase UID: " + firebaseUid));
-        return mapToResponse(customer);
-    }
+     @Transactional(readOnly = true)
+     public CustomerResponse getCustomerByFirebaseUid(String firebaseUid) {
+         Customer customer = customerRepository.findByFirebaseUid(firebaseUid) // <--- ¡CAMBIADO AQUÍ!
+                 .orElseThrow(
+                         () -> new IllegalArgumentException("Customer not found with Firebase UID: " + firebaseUid));
+         return mapToResponse(customer);
+     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomers() {
