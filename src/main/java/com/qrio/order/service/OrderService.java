@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.qrio.customer.model.Customer;
+import com.qrio.customer.repository.CustomerRepository;
 import com.qrio.order.dto.request.CreateOrderItemRequest;
 import com.qrio.order.dto.request.CreateOrderRequest;
 import com.qrio.order.dto.request.UpdateOrderItemRequest;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final CustomerRepository customerRepository;
 
     public List<OrderListResponse> getList() {
         return orderRepository.findList();
@@ -44,9 +47,14 @@ public class OrderService {
 
     @Transactional
     public OrderListResponse create(CreateOrderRequest request) {
+
+        Customer customer = customerRepository.findById(request.customerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+
         Order order = new Order();
+
         order.setTableId(request.tableId());
-        order.setCustomerId(request.customerId());
+        order.setCustomer(customer);
         order.setStatus(OrderStatus.valueOf(request.status()));
         order.setTotal(request.total());
         order.setPeople(request.people());
@@ -70,10 +78,13 @@ public class OrderService {
 
     @Transactional
     public OrderListResponse update(Long id, UpdateOrderRequest request) {
+
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+        Customer customer = customerRepository.findById(request.customerId())
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
-        order.setCustomerId(request.customerId());
+        order.setCustomer(customer);
         order.setStatus(OrderStatus.valueOf(request.status()));
         order.setPeople(request.people());
 
@@ -105,11 +116,11 @@ public class OrderService {
         return new OrderListResponse(
                 order.getId(),
                 order.getTableId(),
-                order.getCustomerId(),
+                order.getCustomer().getId(),
                 order.getStatus(),
                 order.getTotal(),
                 order.getPeople(),
-                
+
                 (long) order.getOrderItems().size());
     }
 }
