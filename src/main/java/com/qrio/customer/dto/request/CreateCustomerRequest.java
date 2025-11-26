@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 public record CreateCustomerRequest(
 
-        @NotBlank(message = "Firebase UID is required") @Size(max = 255, message = "Firebase UID cannot exceed 255 characters") String uidFirebase,
+        @NotBlank(message = "Firebase UID is required") @Size(max = 255, message = "Firebase UID cannot exceed 255 characters") String firebaseUid,
 
         @NotBlank(message = "Name is required") @Size(max = 100, message = "Name cannot exceed 100 characters") String name,
 

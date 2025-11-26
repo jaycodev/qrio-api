@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 
 import com.qrio.user.dto.request.CreateUserRequest;
 import com.qrio.user.dto.response.UserResponse;
-import com.qrio.user.model.type.UserStatus;
 import com.qrio.user.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;

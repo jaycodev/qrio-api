@@ -21,7 +21,7 @@ public class UserService {
 
     @Transactional
     public UserResponse createUser(CreateUserRequest request) {
-        if (userRepository.existsByUidFirebase(request.firebaseUid())) {
+        if (userRepository.existsByFirebaseUid(request.firebaseUid())) {
             throw new IllegalArgumentException("User with this Firebase UID already exists");
         }
 
