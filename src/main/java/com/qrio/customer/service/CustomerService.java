@@ -72,13 +72,13 @@ public class CustomerService {
         return mapToResponse(customer);
     }
 
-    @Transactional(readOnly = true)
-    public CustomerResponse getCustomerByFirebaseUid(String firebaseUid) {
-        Customer customer = customerRepository.findByFirebaseUid(firebaseUid)
-                .orElseThrow(
-                        () -> new IllegalArgumentException("Customer not found with Firebase UID: " + firebaseUid));
-        return mapToResponse(customer);
-    }
+     @Transactional(readOnly = true)
+     public CustomerResponse getCustomerByFirebaseUid(String firebaseUid) {
+         Customer customer = customerRepository.findByFirebaseUid(firebaseUid) // <--- ¡CAMBIADO AQUÍ!
+                 .orElseThrow(
+                         () -> new IllegalArgumentException("Customer not found with Firebase UID: " + firebaseUid));
+         return mapToResponse(customer);
+     }
 
     @Transactional(readOnly = true)
     public List<CustomerResponse> getAllCustomers() {
