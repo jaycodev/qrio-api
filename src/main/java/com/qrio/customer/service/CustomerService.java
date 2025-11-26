@@ -24,7 +24,7 @@ public class CustomerService {
 
     @Transactional
     public CustomerResponse createCustomer(CreateCustomerRequest request) {
-        if (customerRepository.existsByUidFirebase(request.uidFirebase())) {
+        if (customerRepository.existsByFirebaseUid(request.firebaseUid())) {
             throw new IllegalArgumentException("Customer with this Firebase UID already exists");
         }
 
@@ -33,7 +33,7 @@ public class CustomerService {
         }
 
         Customer customer = new Customer();
-        customer.setUidFirebase(request.uidFirebase());
+        customer.setFirebaseUid(request.firebaseUid());
         customer.setName(request.name());
         customer.setEmail(request.email());
         customer.setPhone(request.phone());
@@ -55,7 +55,7 @@ public class CustomerService {
                     throw new IllegalArgumentException("Email is already in use by another customer");
                 });
 
-        customer.setUidFirebase(request.uidFirebase());
+        customer.setFirebaseUid(request.firebaseUid());
         customer.setName(request.name());
         customer.setEmail(request.email());
         customer.setPhone(request.phone());
@@ -101,7 +101,7 @@ public class CustomerService {
     private CustomerResponse mapToResponse(Customer customer) {
         return new CustomerResponse(
                 customer.getId(),
-                customer.getUidFirebase(),
+                customer.getFirebaseUid(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),

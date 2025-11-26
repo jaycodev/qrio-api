@@ -32,7 +32,7 @@ public class Customer {
     private Long id;
 
     @Column(name = "firebase_uid", unique = true)
-    private String uidFirebase;
+    private String firebaseUid;
 
     private String name;
 
