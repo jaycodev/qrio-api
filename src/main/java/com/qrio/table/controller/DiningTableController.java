@@ -1,6 +1,9 @@
 package com.qrio.table.controller;
 
+import com.qrio.branch.model.Branch;
+import com.qrio.branch.repository.BranchRepository;
 import com.qrio.shared.api.ApiSuccess;
+import com.qrio.shared.exception.ResourceNotFoundException;
 import com.qrio.table.dto.request.CreateDiningTableRequest;
 import com.qrio.table.dto.request.UpdateDiningTableRequest;
 import com.qrio.table.dto.response.DiningTableResponse;
@@ -18,9 +21,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/tables")
 public class DiningTableController {
     private final DiningTableService service;
+    private final BranchRepository branchRepository;
 
-    public DiningTableController(DiningTableService service) {
+    public DiningTableController(DiningTableService service, BranchRepository branchRepository) {
         this.service = service;
+        this.branchRepository = branchRepository;
     }
 
     @GetMapping
@@ -40,8 +45,11 @@ public class DiningTableController {
     @PostMapping
     public ResponseEntity<ApiSuccess<DiningTableResponse>> create(
             @Validated @RequestBody CreateDiningTableRequest req) {
+        Branch branch = branchRepository.findById(req.getBranchId())
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
+
         DiningTable t = new DiningTable();
-        t.setBranchId(req.getBranchId());
+        t.setBranch(branch);
         t.setTableNumber(req.getTableNumber());
         t.setQrCode(req.getQrCode());
         DiningTable saved = service.create(t);
@@ -53,8 +61,11 @@ public class DiningTableController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiSuccess<DiningTableResponse>> update(@PathVariable Long id,
             @Validated @RequestBody UpdateDiningTableRequest req) {
+        Branch branch = branchRepository.findById(req.getBranchId())
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
+
         DiningTable t = new DiningTable();
-        t.setBranchId(req.getBranchId());
+        t.setBranch(branch);
         t.setTableNumber(req.getTableNumber());
         t.setQrCode(req.getQrCode());
         DiningTable updated = service.update(id, t);

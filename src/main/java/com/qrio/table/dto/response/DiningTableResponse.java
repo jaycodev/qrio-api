@@ -11,7 +11,7 @@ public class DiningTableResponse {
     public static DiningTableResponse from(DiningTable t) {
         DiningTableResponse resp = new DiningTableResponse();
         resp.id = t.getId();
-        resp.branchId = t.getBranchId();
+        resp.branchId = t.getBranch().getId();
         resp.tableNumber = t.getTableNumber();
         resp.qrCode = t.getQrCode();
         return resp;

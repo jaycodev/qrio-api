@@ -34,7 +34,9 @@ public class DiningTableService {
 
     public DiningTable update(Long id, DiningTable data) {
         DiningTable current = get(id);
-        current.setBranchId(data.getBranchId());
+        if (data.getBranch() != null) {
+            current.setBranch(data.getBranch());
+        }
         current.setTableNumber(data.getTableNumber());
         current.setQrCode(data.getQrCode());
         return repository.save(current);

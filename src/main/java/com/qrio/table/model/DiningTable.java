@@ -1,5 +1,7 @@
 package com.qrio.table.model;
 
+import com.qrio.branch.model.Branch;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,8 +15,9 @@ public class DiningTable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "branch_id", nullable = false)
-    private Long branchId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id", nullable = false)
+    private Branch branch;
 
     @Column(name = "table_number", nullable = false)
     private Integer tableNumber;

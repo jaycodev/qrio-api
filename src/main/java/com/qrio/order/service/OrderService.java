@@ -10,6 +10,8 @@ import org.springframework.validation.annotation.Validated;
 
 import com.qrio.customer.model.Customer;
 import com.qrio.customer.repository.CustomerRepository;
+import com.qrio.table.model.DiningTable;
+import com.qrio.table.repository.DiningTableRepository;
 import com.qrio.order.dto.request.CreateOrderItemRequest;
 import com.qrio.order.dto.request.CreateOrderRequest;
 import com.qrio.order.dto.request.UpdateOrderItemRequest;
@@ -33,9 +35,10 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
     private final CustomerRepository customerRepository;
+    private final DiningTableRepository diningTableRepository;
 
-    public List<OrderListResponse> getList() {
-        return orderRepository.findList();
+    public List<OrderListResponse> getList(Long restaurantId, Long branchId) {
+        return orderRepository.findList(restaurantId, branchId);
     }
 
     public OrderDetailResponse getDetailById(Long id) {
@@ -51,9 +54,12 @@ public class OrderService {
         Customer customer = customerRepository.findById(request.customerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
+        DiningTable diningTable = diningTableRepository.findById(request.tableId())
+                .orElseThrow(() -> new ResourceNotFoundException("DiningTable not found"));
+
         Order order = new Order();
 
-        order.setTableId(request.tableId());
+        order.setDiningTable(diningTable);
         order.setCustomer(customer);
         order.setStatus(OrderStatus.valueOf(request.status()));
         order.setTotal(request.total());
@@ -115,7 +121,7 @@ public class OrderService {
     public OrderListResponse toListResponse(Order order) {
         return new OrderListResponse(
                 order.getId(),
-                order.getTableId(),
+                order.getDiningTable().getId(),
                 order.getCustomer().getId(),
                 order.getStatus(),
                 order.getTotal(),
