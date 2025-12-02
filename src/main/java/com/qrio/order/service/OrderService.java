@@ -134,6 +134,7 @@ public class OrderService {
                 order.getDiningTable().getTableNumber(),
 
                 order.getCustomer().getId(),
+                order.getCustomer().getCode(),
                 order.getCustomer().getName(),
                 
                 order.getStatus(),

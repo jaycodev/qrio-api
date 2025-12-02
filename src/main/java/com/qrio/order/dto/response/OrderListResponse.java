@@ -16,6 +16,7 @@ public record OrderListResponse(
     @JsonIgnore Integer tableNumber,
 
     @JsonIgnore Long customerId,
+    @JsonIgnore String customerCode,
     @JsonIgnore String customerName,
 
     OrderStatus status,
@@ -36,11 +37,12 @@ public record OrderListResponse(
 
     @JsonGetter("customer")
     public Customer getCustomer() {
-        return new Customer(customerId, customerName);
+        return new Customer(customerId, customerCode, customerName);
     }
 
     public record Customer(
         Long id,
+        String code,
         String name
     ) {}
 }
