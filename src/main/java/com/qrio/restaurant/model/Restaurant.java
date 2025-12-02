@@ -15,6 +15,9 @@ public class Restaurant {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(insertable = false, updatable = false)
+    private String code;
+
     @Column(name = "user_id", nullable = false)
     private Long userId;
 

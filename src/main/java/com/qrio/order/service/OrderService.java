@@ -128,6 +128,7 @@ public class OrderService {
     public OrderListResponse toListResponse(Order order) {
         return new OrderListResponse(
                 order.getId(),
+                order.getCode(),
 
                 order.getDiningTable().getId(),
                 order.getDiningTable().getTableNumber(),

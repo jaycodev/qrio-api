@@ -31,6 +31,9 @@ public class Customer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(insertable = false, updatable = false)
+    private String code;
+
     @Column(name = "firebase_uid", unique = true)
     private String firebaseUid;
 

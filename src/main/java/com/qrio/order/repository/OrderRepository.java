@@ -14,6 +14,7 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Query("""
         SELECT 
             o.id AS id,
+            o.code AS code,
 
             o.diningTable.id AS tableId,
             o.diningTable.tableNumber AS tableNumber,
