@@ -14,8 +14,13 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Query("""
         SELECT 
             o.id AS id,
+
             o.diningTable.id AS tableId,
+            o.diningTable.tableNumber AS tableNumber,
+            
             o.customer.id AS customerId,
+            o.customer.name AS customerName,
+            
             o.status AS status,
             o.total AS total,
             o.people AS people,
@@ -27,7 +32,7 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
         JOIN dt.branch b
         WHERE b.restaurantId = :restaurantId
         AND (:branchId IS NULL OR b.id = :branchId)
-        GROUP BY o.id, o.diningTable.id, o.customer.id, o.status, o.total, o.people
+        GROUP BY o.id, o.diningTable.id, o.diningTable.tableNumber, o.customer.id, o.customer.name, o.status, o.total, o.people
         ORDER BY o.id DESC
     """)
     List<OrderListResponse> findList(Long restaurantId, Long branchId);

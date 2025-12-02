@@ -121,8 +121,13 @@ public class OrderService {
     public OrderListResponse toListResponse(Order order) {
         return new OrderListResponse(
                 order.getId(),
+
                 order.getDiningTable().getId(),
+                order.getDiningTable().getTableNumber(),
+
                 order.getCustomer().getId(),
+                order.getCustomer().getName(),
+                
                 order.getStatus(),
                 order.getTotal(),
                 order.getPeople(),
