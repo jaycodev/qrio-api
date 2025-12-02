@@ -52,8 +52,9 @@ public class OrderController {
 
     @GetMapping("/filter-options")
     @Operation(summary = "Get filter options for orders")
-    public ResponseEntity<ApiSuccess<OrderFilterOptionsResponse>> filterOptions() {
-        OrderFilterOptionsResponse options = orderService.getFilterOptions();
+    public ResponseEntity<ApiSuccess<OrderFilterOptionsResponse>> filterOptions(
+            @RequestParam Long branchId) {
+        OrderFilterOptionsResponse options = orderService.getFilterOptions(branchId);
 
         boolean hasOptions = !options.tables().isEmpty() || !options.customers().isEmpty();
 

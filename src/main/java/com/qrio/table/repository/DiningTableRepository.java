@@ -19,7 +19,8 @@ public interface DiningTableRepository extends JpaRepository<DiningTable, Long> 
             dt.id AS value,
             CONCAT('Mesa ', CAST(dt.tableNumber AS STRING)) AS label
         FROM DiningTable dt 
+        WHERE dt.branch.id = :branchId
         ORDER BY dt.tableNumber ASC
     """)
-    List<OptionResponse> findForOptions();
+    List<OptionResponse> findForOptions(Long branchId);
 }
