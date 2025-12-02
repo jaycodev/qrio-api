@@ -7,9 +7,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.qrio.order.model.type.OrderStatus;
 
-@JsonPropertyOrder({ "id", "table", "customer", "status", "total", "people", "itemCount" })
+@JsonPropertyOrder({ "id", "code", "table", "customer", "status", "total", "people", "itemCount" })
 public record OrderListResponse(
     Long id,
+    String code,
 
     @JsonIgnore Long tableId,
     @JsonIgnore Integer tableNumber,

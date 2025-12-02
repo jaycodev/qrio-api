@@ -13,6 +13,7 @@ CREATE TABLE users (
 
 CREATE TABLE customers (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code VARCHAR(50) UNIQUE,
     firebase_uid VARCHAR(255) UNIQUE,
     name VARCHAR(150),
     email VARCHAR(150),
@@ -34,6 +35,7 @@ CREATE TABLE payment_methods (
 
 CREATE TABLE restaurants (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code VARCHAR(50) UNIQUE,
     user_id BIGINT NOT NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT,
@@ -44,6 +46,7 @@ CREATE TABLE restaurants (
 
 CREATE TABLE branches (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code VARCHAR(50) UNIQUE,
     restaurant_id BIGINT NOT NULL,
     name VARCHAR(150) NOT NULL,
     address VARCHAR(255),
@@ -81,6 +84,7 @@ CREATE TABLE dishes (
 
 CREATE TABLE offers (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code VARCHAR(50) UNIQUE,
     restaurant_id BIGINT NOT NULL,
     title VARCHAR(150) NOT NULL,
     description TEXT,
@@ -91,6 +95,7 @@ CREATE TABLE offers (
 
 CREATE TABLE orders (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    code VARCHAR(50) UNIQUE,
     table_id BIGINT NOT NULL,
     customer_id BIGINT,
     status VARCHAR(50) DEFAULT 'PENDIENTE' CHECK (status IN ('PENDIENTE', 'EN_PROGRESO', 'COMPLETADO', 'CANCELADO')),

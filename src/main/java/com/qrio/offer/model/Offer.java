@@ -20,6 +20,9 @@ public class Offer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(insertable = false, updatable = false)
+    private String code;
+
     @Column(nullable = false)
     private Long restaurantId;
 
