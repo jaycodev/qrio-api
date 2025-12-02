@@ -42,9 +42,9 @@ public class OrderService {
         return orderRepository.findList(restaurantId, branchId);
     }
 
-    public OrderFilterOptionsResponse getFilterOptions() {
+    public OrderFilterOptionsResponse getFilterOptions(Long branchId) {
         return new OrderFilterOptionsResponse(
-                diningTableRepository.findForOptions(),
+                diningTableRepository.findForOptions(branchId),
                 customerRepository.findForOptions());
     }
 
