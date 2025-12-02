@@ -14,8 +14,13 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
     @Query("""
         SELECT 
             o.id AS id,
-            o.tableId AS tableId,
+
+            o.diningTable.id AS tableId,
+            o.diningTable.tableNumber AS tableNumber,
+            
             o.customer.id AS customerId,
+            o.customer.name AS customerName,
+            
             o.status AS status,
             o.total AS total,
             o.people AS people,
@@ -23,15 +28,19 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
             COALESCE(COUNT(oi.id), 0) AS itemCount
         FROM Order o
         LEFT JOIN o.orderItems oi
-        GROUP BY o.id, o.tableId, o.customer.id, o.status, o.total, o.people
+        JOIN o.diningTable dt
+        JOIN dt.branch b
+        WHERE b.restaurantId = :restaurantId
+        AND (:branchId IS NULL OR b.id = :branchId)
+        GROUP BY o.id, o.diningTable.id, o.diningTable.tableNumber, o.customer.id, o.customer.name, o.status, o.total, o.people
         ORDER BY o.id DESC
     """)
-    List<OrderListResponse> findList();
+    List<OrderListResponse> findList(Long restaurantId, Long branchId);
 
     @Query("""
         SELECT 
             o.id AS id,
-            o.tableId AS tableId,
+            o.diningTable.id AS tableId,
             o.customer.id AS customerId,
             o.status AS status,
             o.total AS total,

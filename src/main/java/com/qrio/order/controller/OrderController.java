@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -36,9 +37,11 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    @Operation(summary = "List all orders")
-    public ResponseEntity<ApiSuccess<List<OrderListResponse>>> list() {
-        List<OrderListResponse> orders = orderService.getList();
+    @Operation(summary = "List orders by restaurant and branch")
+    public ResponseEntity<ApiSuccess<List<OrderListResponse>>> list(
+            @RequestParam Long restaurantId,
+            @RequestParam(required = false) Long branchId) {
+        List<OrderListResponse> orders = orderService.getList(restaurantId, branchId);
         ApiSuccess<List<OrderListResponse>> response = new ApiSuccess<>(
                 orders.isEmpty() ? "No orders found" : "Orders listed successfully",
                 orders);
