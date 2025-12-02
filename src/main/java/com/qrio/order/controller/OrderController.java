@@ -3,6 +3,7 @@ package com.qrio.order.controller;
 import com.qrio.order.dto.request.CreateOrderRequest;
 import com.qrio.order.dto.request.UpdateOrderRequest;
 import com.qrio.order.dto.response.OrderDetailResponse;
+import com.qrio.order.dto.response.OrderFilterOptionsResponse;
 import com.qrio.order.dto.response.OrderListResponse;
 import com.qrio.order.service.OrderService;
 import com.qrio.shared.api.ApiSuccess;
@@ -47,6 +48,21 @@ public class OrderController {
                 orders);
 
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/filter-options")
+    @Operation(summary = "Get filter options for orders")
+    public ResponseEntity<ApiSuccess<OrderFilterOptionsResponse>> filterOptions() {
+        OrderFilterOptionsResponse options = orderService.getFilterOptions();
+
+        boolean hasOptions = !options.tables().isEmpty() || !options.customers().isEmpty();
+
+        ApiSuccess<OrderFilterOptionsResponse> response = new ApiSuccess<>(
+                hasOptions ? "Filter options retrieved successfully" : "No filter options found",
+                options);
+
+        HttpStatus status = hasOptions ? HttpStatus.OK : HttpStatus.NO_CONTENT;
+        return ResponseEntity.status(status).body(response);
     }
 
     @GetMapping("/{id}")

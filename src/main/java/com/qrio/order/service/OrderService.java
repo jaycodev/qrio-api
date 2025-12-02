@@ -17,6 +17,7 @@ import com.qrio.order.dto.request.CreateOrderRequest;
 import com.qrio.order.dto.request.UpdateOrderItemRequest;
 import com.qrio.order.dto.request.UpdateOrderRequest;
 import com.qrio.order.dto.response.OrderDetailResponse;
+import com.qrio.order.dto.response.OrderFilterOptionsResponse;
 import com.qrio.order.dto.response.OrderListResponse;
 import com.qrio.order.model.Order;
 import com.qrio.order.model.OrderItem;
@@ -39,6 +40,12 @@ public class OrderService {
 
     public List<OrderListResponse> getList(Long restaurantId, Long branchId) {
         return orderRepository.findList(restaurantId, branchId);
+    }
+
+    public OrderFilterOptionsResponse getFilterOptions() {
+        return new OrderFilterOptionsResponse(
+                diningTableRepository.findForOptions(),
+                customerRepository.findForOptions());
     }
 
     public OrderDetailResponse getDetailById(Long id) {

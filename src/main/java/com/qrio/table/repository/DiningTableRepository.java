@@ -1,5 +1,6 @@
 package com.qrio.table.repository;
 
+import com.qrio.shared.response.OptionResponse;
 import com.qrio.table.model.DiningTable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,13 @@ public interface DiningTableRepository extends JpaRepository<DiningTable, Long> 
     List<DiningTable> findByBranchId(Long branchId);
 
     Optional<DiningTable> findByQrCode(String qrCode);
+
+    @Query("""
+        SELECT 
+            dt.id AS value,
+            CONCAT('Mesa ', CAST(dt.tableNumber AS STRING)) AS label
+        FROM DiningTable dt 
+        ORDER BY dt.tableNumber ASC
+    """)
+    List<OptionResponse> findForOptions();
 }
