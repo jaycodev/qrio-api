@@ -15,8 +15,8 @@ public interface DiningTableRepository extends CrudRepository<DiningTable, Long>
     @Query("""
         SELECT 
             dt.id AS id,
-            dt.branch.id AS branchId,
             dt.tableNumber AS tableNumber,
+            dt.floor AS floor,
             dt.qrCode AS qrCode
         FROM DiningTable dt
         WHERE (:branchId IS NULL OR dt.branch.id = :branchId)
@@ -27,8 +27,8 @@ public interface DiningTableRepository extends CrudRepository<DiningTable, Long>
     @Query("""
         SELECT 
             dt.id AS id,
-            dt.branch.id AS branchId,
             dt.tableNumber AS tableNumber,
+            dt.floor AS floor,
             dt.qrCode AS qrCode
         FROM DiningTable dt
         WHERE dt.id = :id

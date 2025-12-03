@@ -29,8 +29,7 @@ public class DiningTableController {
 
     @GetMapping
     @Operation(summary = "List dining tables by branch")
-    public ResponseEntity<ApiSuccess<List<DiningTableListResponse>>> list(
-            @RequestParam(required = false) Long branchId) {
+    public ResponseEntity<ApiSuccess<List<DiningTableListResponse>>> list(@RequestParam Long branchId) {
         List<DiningTableListResponse> tables = diningTableService.getList(branchId);
         ApiSuccess<List<DiningTableListResponse>> response = new ApiSuccess<>(
                 tables.isEmpty() ? "No tables found" : "Tables listed successfully",

@@ -39,8 +39,7 @@ public class OrderController {
 
     @GetMapping
     @Operation(summary = "List orders by branch")
-    public ResponseEntity<ApiSuccess<List<OrderListResponse>>> list(
-            @RequestParam Long branchId) {
+    public ResponseEntity<ApiSuccess<List<OrderListResponse>>> list(@RequestParam Long branchId) {
         List<OrderListResponse> orders = orderService.getList(branchId);
         ApiSuccess<List<OrderListResponse>> response = new ApiSuccess<>(
                 orders.isEmpty() ? "No orders found" : "Orders listed successfully",
@@ -51,8 +50,7 @@ public class OrderController {
 
     @GetMapping("/filter-options")
     @Operation(summary = "Get filter options for orders by branch")
-    public ResponseEntity<ApiSuccess<OrderFilterOptionsResponse>> filterOptions(
-            @RequestParam Long branchId) {
+    public ResponseEntity<ApiSuccess<OrderFilterOptionsResponse>> filterOptions(@RequestParam Long branchId) {
         OrderFilterOptionsResponse options = orderService.getFilterOptions(branchId);
 
         boolean hasOptions = !options.tables().isEmpty() || !options.customers().isEmpty();

@@ -13,6 +13,7 @@ import com.qrio.product.dto.request.UpdateProductRequest;
 import com.qrio.product.dto.response.ProductDetailResponse;
 import com.qrio.product.dto.response.ProductListResponse;
 import com.qrio.product.model.Product;
+import com.qrio.product.repository.ProductBranchAvailabilityRepository;
 import com.qrio.product.repository.ProductRepository;
 import com.qrio.shared.exception.ResourceNotFoundException;
 
@@ -24,11 +25,12 @@ import lombok.RequiredArgsConstructor;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductBranchAvailabilityRepository productBranchAvailabilityRepository;
     private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public List<ProductListResponse> getList(Long categoryId) {
-        return productRepository.findList(categoryId);
+    public List<ProductListResponse> getList(Long branchId) {
+        return productRepository.findList(branchId);
     }
 
     @Transactional(readOnly = true)
@@ -38,7 +40,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductListResponse create(CreateProductRequest request) {
+    public ProductListResponse create(CreateProductRequest request, Long branchId) {
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
@@ -52,14 +54,13 @@ public class ProductService {
         product.setDescription(request.description());
         product.setPrice(request.price());
         product.setImageUrl(request.imageUrl());
-        product.setAvailable(request.available() != null ? request.available() : true);
 
         Product saved = productRepository.save(product);
-        return toListResponse(saved);
+        return toListResponse(saved, branchId);
     }
 
     @Transactional
-    public ProductListResponse update(Long id, UpdateProductRequest request) {
+    public ProductListResponse update(Long id, UpdateProductRequest request, Long branchId) {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
 
@@ -80,19 +81,28 @@ public class ProductService {
         product.setDescription(request.description());
         product.setPrice(request.price());
         product.setImageUrl(request.imageUrl());
-        product.setAvailable(request.available());
 
         Product updated = productRepository.save(product);
-        return toListResponse(updated);
+        return toListResponse(updated, branchId);
     }
 
-    private ProductListResponse toListResponse(Product product) {
+    private ProductListResponse toListResponse(Product product, Long branchId) {
+        boolean available = branchId != null
+                ? productBranchAvailabilityRepository
+                        .findAvailabilityByProductAndBranch(product.getId(), branchId)
+                        .orElse(false)
+                : false;
+
         return new ProductListResponse(
                 product.getId(),
-                product.getCategory().getId(),
-                product.getName(),
-                product.getPrice(),
                 product.getImageUrl(),
-                product.getAvailable());
+                product.getName(),
+                product.getDescription(),
+                product.getPrice(),
+
+                product.getCategory().getId(),
+                product.getCategory().getName(),
+
+                available);
     }
 }
