@@ -67,8 +67,8 @@ public class DiningTableService {
     private DiningTableListResponse toListResponse(DiningTable table) {
         return new DiningTableListResponse(
                 table.getId(),
-                table.getBranch().getId(),
                 table.getTableNumber(),
+                table.getFloor(),
                 table.getQrCode());
     }
 }

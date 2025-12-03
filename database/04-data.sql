@@ -120,27 +120,27 @@ INSERT INTO branches (restaurant_id, name, address, phone, schedule) VALUES
 (18, 'Sandwiches - Breña', 'Av. Brasil 567, Breña', '+5114567819', 'Lun-Vie 08:00-20:00'),
 (19, 'Anticuchería - Rímac', 'Av. Francisco Pizarro 890, Rímac', '+5114567820', 'Jue-Dom 18:00-02:00');
 
-INSERT INTO dining_tables (branch_id, table_number, qr_code) VALUES
-(1, 1, 'QR_BR1_T01_ABC123'),
-(1, 2, 'QR_BR1_T02_DEF456'),
-(1, 3, 'QR_BR1_T03_GHI789'),
-(2, 1, 'QR_BR2_T01_JKL012'),
-(2, 2, 'QR_BR2_T02_MNO345'),
-(3, 1, 'QR_BR3_T01_PQR678'),
-(3, 2, 'QR_BR3_T02_STU901'),
-(4, 1, 'QR_BR4_T01_VWX234'),
-(5, 1, 'QR_BR5_T01_YZA567'),
-(5, 2, 'QR_BR5_T02_BCD890'),
-(6, 1, 'QR_BR6_T01_EFG123'),
-(7, 1, 'QR_BR7_T01_HIJ456'),
-(8, 1, 'QR_BR8_T01_KLM789'),
-(9, 1, 'QR_BR9_T01_NOP012'),
-(10, 1, 'QR_BR10_T01_QRS345'),
-(11, 1, 'QR_BR11_T01_TUV678'),
-(12, 1, 'QR_BR12_T01_WXY901'),
-(13, 1, 'QR_BR13_T01_ZAB234'),
-(14, 1, 'QR_BR14_T01_CDE567'),
-(15, 1, 'QR_BR15_T01_FGH890');
+INSERT INTO dining_tables (branch_id, table_number, floor, qr_code) VALUES
+(1, 1, 1, 'QR_BR1_T01_ABC123'),
+(1, 2, 1, 'QR_BR1_T02_DEF456'),
+(1, 3, 2, 'QR_BR1_T03_GHI789'),
+(2, 1, 1, 'QR_BR2_T01_JKL012'),
+(2, 2, 1, 'QR_BR2_T02_MNO345'),
+(3, 1, 1, 'QR_BR3_T01_PQR678'),
+(3, 2, 2, 'QR_BR3_T02_STU901'),
+(4, 1, 1, 'QR_BR4_T01_VWX234'),
+(5, 1, 1, 'QR_BR5_T01_YZA567'),
+(5, 2, 2, 'QR_BR5_T02_BCD890'),
+(6, 1, 1, 'QR_BR6_T01_EFG123'),
+(7, 1, 1, 'QR_BR7_T01_HIJ456'),
+(8, 1, 1, 'QR_BR8_T01_KLM789'),
+(9, 1, 1, 'QR_BR9_T01_NOP012'),
+(10, 1, 2, 'QR_BR10_T01_QRS345'),
+(11, 1, 1, 'QR_BR11_T01_TUV678'),
+(12, 1, 1, 'QR_BR12_T01_WXY901'),
+(13, 1, 1, 'QR_BR13_T01_ZAB234'),
+(14, 1, 2, 'QR_BR14_T01_CDE567'),
+(15, 1, 1, 'QR_BR15_T01_FGH890');
 
 INSERT INTO categories (restaurant_id, name) VALUES
 (1, 'Entradas'),

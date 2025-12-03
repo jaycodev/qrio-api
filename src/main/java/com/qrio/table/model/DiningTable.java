@@ -22,6 +22,9 @@ public class DiningTable {
     @Column(nullable = false)
     private Integer tableNumber;
 
+    @Column(nullable = false)
+    private Integer floor;
+
     @Column(nullable = false, length = 255, unique = true)
     private String qrCode;
 }

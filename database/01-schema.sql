@@ -72,6 +72,7 @@ CREATE TABLE dining_tables (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     branch_id BIGINT NOT NULL,
     table_number INTEGER NOT NULL,
+    floor INTEGER NOT NULL,
     qr_code VARCHAR(255) NOT NULL UNIQUE,
     FOREIGN KEY (branch_id) REFERENCES branches (id)
 );
