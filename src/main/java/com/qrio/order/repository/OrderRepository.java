@@ -31,13 +31,11 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
         FROM Order o
         LEFT JOIN o.orderItems oi
         JOIN o.diningTable dt
-        JOIN dt.branch b
-        WHERE b.restaurant.id = :restaurantId
-        AND (:branchId IS NULL OR b.id = :branchId)
+        WHERE dt.branch.id = :branchId
         GROUP BY o.id, o.code, o.diningTable.id, o.diningTable.tableNumber, o.customer.id, o.customer.code, o.customer.name, o.status, o.total, o.people
         ORDER BY o.id DESC
     """)
-    List<OrderListResponse> findList(Long restaurantId, Long branchId);
+    List<OrderListResponse> findList(Long branchId);
 
     @Query("""
         SELECT 

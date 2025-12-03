@@ -38,11 +38,10 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    @Operation(summary = "List orders by restaurant and branch")
+    @Operation(summary = "List orders by branch")
     public ResponseEntity<ApiSuccess<List<OrderListResponse>>> list(
-            @RequestParam Long restaurantId,
-            @RequestParam(required = false) Long branchId) {
-        List<OrderListResponse> orders = orderService.getList(restaurantId, branchId);
+            @RequestParam Long branchId) {
+        List<OrderListResponse> orders = orderService.getList(branchId);
         ApiSuccess<List<OrderListResponse>> response = new ApiSuccess<>(
                 orders.isEmpty() ? "No orders found" : "Orders listed successfully",
                 orders);
@@ -51,7 +50,7 @@ public class OrderController {
     }
 
     @GetMapping("/filter-options")
-    @Operation(summary = "Get filter options for orders")
+    @Operation(summary = "Get filter options for orders by branch")
     public ResponseEntity<ApiSuccess<OrderFilterOptionsResponse>> filterOptions(
             @RequestParam Long branchId) {
         OrderFilterOptionsResponse options = orderService.getFilterOptions(branchId);
