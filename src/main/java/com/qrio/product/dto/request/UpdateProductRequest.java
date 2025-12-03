@@ -8,16 +8,18 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record UpdateProductRequest(
+    @NotNull(message = "Category ID is required")
+    Long categoryId,
 
-        @NotNull(message = "Category ID is required") Long categoryId,
+    @NotBlank(message = "Name is required")
+    @Size(max = 150, message = "Name cannot exceed 150 characters")
+    String name,
 
-        @NotBlank(message = "Name is required") @Size(max = 150, message = "Name cannot exceed 150 characters") String name,
+    String description,
 
-        String description,
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.01", message = "Price must be positive")
+    BigDecimal price,
 
-        @NotNull(message = "Price is required") @DecimalMin(value = "0.01", message = "Price must be positive") BigDecimal price,
-
-        String imageUrl,
-
-        @NotNull(message = "Availability status is required") Boolean available) {
-}
+    String imageUrl
+) {}

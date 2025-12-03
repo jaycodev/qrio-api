@@ -11,32 +11,34 @@ import com.qrio.product.dto.response.ProductListResponse;
 import com.qrio.product.model.Product;
 
 public interface ProductRepository extends CrudRepository<Product, Long> {
-
     @Query("""
         SELECT 
-            d.id AS id,
-            d.category.id AS categoryId,
-            d.name AS name,
-            d.price AS price,
-            d.imageUrl AS imageUrl,
-            d.available AS available
-        FROM Product d
-        WHERE (:categoryId IS NULL OR d.category.id = :categoryId)
-        ORDER BY d.name ASC
+            p.id AS id,
+            p.imageUrl AS imageUrl,
+            p.name AS name,
+            p.description AS description,
+            p.price AS price,
+            
+            p.category.id AS categoryId,
+            p.category.name AS categoryName,
+
+            ba.available AS available
+        FROM Product p
+        JOIN p.branchAvailabilities ba ON ba.branch.id = :branchId
+        ORDER BY p.name ASC
     """)
-    List<ProductListResponse> findList(Long categoryId);
+    List<ProductListResponse> findList(Long branchId);
 
     @Query("""
-        SELECT 
-            d.id AS id,
-            d.category.id AS categoryId,
-            d.name AS name,
-            d.description AS description,
-            d.price AS price,
-            d.imageUrl AS imageUrl,
-            d.available AS available
-        FROM Product d
-        WHERE d.id = :id
+        SELECT
+            p.id AS id,
+            p.category.id AS categoryId,
+            p.name AS name,
+            p.description AS description,
+            p.price AS price,
+            p.imageUrl AS imageUrl
+        FROM Product p
+        WHERE p.id = :id
     """)
     Optional<ProductDetailResponse> findDetailById(Long id);
 

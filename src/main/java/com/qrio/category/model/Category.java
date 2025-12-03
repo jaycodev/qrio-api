@@ -19,14 +19,14 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "categories")
 public class Category {
-	@Id
+    @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
- 	@JoinColumn(name = "restaurant_id", nullable = false)
-	private Restaurant restaurant;
-	
-	@Column(length = 100) 
-	private String name;
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
+
+    @Column(length = 100)
+    private String name;
 }

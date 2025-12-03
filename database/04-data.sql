@@ -164,27 +164,27 @@ INSERT INTO categories (restaurant_id, name) VALUES
 (12, 'Pollos'),
 (13, 'Panes');
 
-INSERT INTO products (category_id, name, description, price, image_url, available) VALUES
-(1, 'Causa Limeña', 'Causa rellena de pollo', 18.50, 'https://example.com/dishes/causa.jpg', TRUE),
-(1, 'Papa a la Huancaína', 'Papas con salsa de ají amarillo', 15.00, 'https://example.com/dishes/huancaina.jpg', TRUE),
-(2, 'Lomo Saltado', 'Carne salteada con papas fritas', 32.00, 'https://example.com/dishes/lomo.jpg', TRUE),
-(2, 'Ají de Gallina', 'Pollo en crema de ají amarillo', 28.00, 'https://example.com/dishes/aji_gallina.jpg', TRUE),
-(3, 'Pizza Margherita', 'Tomate, mozzarella y albahaca', 35.00, 'https://example.com/dishes/margherita.jpg', TRUE),
-(3, 'Pizza Pepperoni', 'Pepperoni y queso', 38.00, 'https://example.com/dishes/pepperoni.jpg', TRUE),
-(4, 'Spaghetti Carbonara', 'Pasta con salsa carbonara', 30.00, 'https://example.com/dishes/carbonara.jpg', TRUE),
-(5, 'Nigiri de Salmón', '2 piezas de nigiri', 22.00, 'https://example.com/dishes/nigiri.jpg', TRUE),
-(6, 'Roll California', '8 piezas', 28.00, 'https://example.com/dishes/california.jpg', TRUE),
-(7, 'Bife de Chorizo', '400g de carne premium', 65.00, 'https://example.com/dishes/bife.jpg', TRUE),
-(8, 'Papas Fritas', 'Porción grande', 12.00, 'https://example.com/dishes/papas.jpg', TRUE),
-(9, 'Café Americano', 'Café negro', 8.00, 'https://example.com/dishes/americano.jpg', TRUE),
-(10, 'Tiramisú', 'Postre italiano clásico', 18.00, 'https://example.com/dishes/tiramisu.jpg', TRUE),
-(11, 'Ceviche Clásico', 'Pescado fresco marinado', 35.00, 'https://example.com/dishes/ceviche.jpg', TRUE),
-(12, 'Sudado de Pescado', 'Pescado en caldo aromático', 38.00, 'https://example.com/dishes/sudado.jpg', TRUE),
-(13, 'Bowl Vegano', 'Quinoa con vegetales', 28.00, 'https://example.com/dishes/bowl.jpg', TRUE),
-(16, 'Tacos al Pastor', '3 tacos con piña', 24.00, 'https://example.com/dishes/tacos.jpg', TRUE),
-(17, 'Burger Clásica', 'Carne, lechuga, tomate, queso', 32.00, 'https://example.com/dishes/burger.jpg', TRUE),
-(19, 'Pollo Entero', 'Pollo a la brasa con papas', 55.00, 'https://example.com/dishes/pollo.jpg', TRUE),
-(20, 'Croissant', 'Croissant de mantequilla', 8.50, 'https://example.com/dishes/croissant.jpg', TRUE);
+INSERT INTO products (category_id, name, description, price, image_url) VALUES
+(1, 'Causa Limeña', 'Causa rellena de pollo', 18.50, 'https://example.com/dishes/causa.jpg'),
+(1, 'Papa a la Huancaína', 'Papas con salsa de ají amarillo', 15.00, 'https://example.com/dishes/huancaina.jpg'),
+(2, 'Lomo Saltado', 'Carne salteada con papas fritas', 32.00, 'https://example.com/dishes/lomo.jpg'),
+(2, 'Ají de Gallina', 'Pollo en crema de ají amarillo', 28.00, 'https://example.com/dishes/aji_gallina.jpg'),
+(3, 'Pizza Margherita', 'Tomate, mozzarella y albahaca', 35.00, 'https://example.com/dishes/margherita.jpg'),
+(3, 'Pizza Pepperoni', 'Pepperoni y queso', 38.00, 'https://example.com/dishes/pepperoni.jpg'),
+(4, 'Spaghetti Carbonara', 'Pasta con salsa carbonara', 30.00, 'https://example.com/dishes/carbonara.jpg'),
+(5, 'Nigiri de Salmón', '2 piezas de nigiri', 22.00, 'https://example.com/dishes/nigiri.jpg'),
+(6, 'Roll California', '8 piezas', 28.00, 'https://example.com/dishes/california.jpg'),
+(7, 'Bife de Chorizo', '400g de carne premium', 65.00, 'https://example.com/dishes/bife.jpg'),
+(8, 'Papas Fritas', 'Porción grande', 12.00, 'https://example.com/dishes/papas.jpg'),
+(9, 'Café Americano', 'Café negro', 8.00, 'https://example.com/dishes/americano.jpg'),
+(10, 'Tiramisú', 'Postre italiano clásico', 18.00, 'https://example.com/dishes/tiramisu.jpg'),
+(11, 'Ceviche Clásico', 'Pescado fresco marinado', 35.00, 'https://example.com/dishes/ceviche.jpg'),
+(12, 'Sudado de Pescado', 'Pescado en caldo aromático', 38.00, 'https://example.com/dishes/sudado.jpg'),
+(13, 'Bowl Vegano', 'Quinoa con vegetales', 28.00, 'https://example.com/dishes/bowl.jpg'),
+(16, 'Tacos al Pastor', '3 tacos con piña', 24.00, 'https://example.com/dishes/tacos.jpg'),
+(17, 'Burger Clásica', 'Carne, lechuga, tomate, queso', 32.00, 'https://example.com/dishes/burger.jpg'),
+(19, 'Pollo Entero', 'Pollo a la brasa con papas', 55.00, 'https://example.com/dishes/pollo.jpg'),
+(20, 'Croissant', 'Croissant de mantequilla', 8.50, 'https://example.com/dishes/croissant.jpg');
 
 INSERT INTO offers (restaurant_id, title, description, offer_discount_percentage, active) VALUES
 (1, '2x1 en Causas', 'Compra una causa y lleva la segunda gratis', 50.00, TRUE),
@@ -297,5 +297,18 @@ INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) V
 (14, 15, 2, 38.00, 76.00),
 (16, 10, 2, 65.00, 130.00),
 (18, 2, 3, 15.00, 45.00);
+
+INSERT INTO product_branch_availability (product_id, branch_id) VALUES
+(1, 1), (1, 2), (2, 1), (2, 2), (3, 1), (3, 2), (4, 1), (4, 2),
+(5, 3), (6, 3), (7, 3),
+(8, 4), (9, 4),
+(10, 5), (11, 5),
+(12, 6), (13, 6),
+(14, 7), (15, 7),
+(16, 8),
+(17, 9),
+(18, 10),
+(19, 11),
+(20, 12);
 
 COMMIT;

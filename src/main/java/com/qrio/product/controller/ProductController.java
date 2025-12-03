@@ -27,14 +27,12 @@ import lombok.RequiredArgsConstructor;
 @Validated
 @Tag(name = "Products", description = "Operations related to products")
 public class ProductController {
-
     private final ProductService productService;
 
     @GetMapping
-    @Operation(summary = "List products by category")
-    public ResponseEntity<ApiSuccess<List<ProductListResponse>>> list(
-            @RequestParam(required = false) Long categoryId) {
-        List<ProductListResponse> products = productService.getList(categoryId);
+    @Operation(summary = "List products by branch")
+    public ResponseEntity<ApiSuccess<List<ProductListResponse>>> list(@RequestParam Long branchId) {
+        List<ProductListResponse> products = productService.getList(branchId);
         ApiSuccess<List<ProductListResponse>> response = new ApiSuccess<>(
                 products.isEmpty() ? "No products found" : "Products listed successfully",
                 products);
@@ -51,8 +49,10 @@ public class ProductController {
 
     @PostMapping
     @Operation(summary = "Create a new product")
-    public ResponseEntity<ApiSuccess<ProductListResponse>> create(@Valid @RequestBody CreateProductRequest request) {
-        ProductListResponse created = productService.create(request);
+    public ResponseEntity<ApiSuccess<ProductListResponse>> create(
+            @RequestParam Long branchId,
+            @Valid @RequestBody CreateProductRequest request) {
+        ProductListResponse created = productService.create(request, branchId);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiSuccess<>("Product created successfully", created));
     }
@@ -61,8 +61,9 @@ public class ProductController {
     @Operation(summary = "Update a product by ID")
     public ResponseEntity<ApiSuccess<ProductListResponse>> update(
             @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
+            @RequestParam Long branchId,
             @Valid @RequestBody UpdateProductRequest request) {
-        ProductListResponse result = productService.update(id, request);
+        ProductListResponse result = productService.update(id, request, branchId);
         return ResponseEntity.ok(new ApiSuccess<>("Product updated successfully", result));
     }
 }

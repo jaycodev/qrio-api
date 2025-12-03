@@ -91,8 +91,16 @@ CREATE TABLE products (
     description TEXT,
     price DECIMAL(10,2) NOT NULL,
     image_url TEXT,
-    available BOOLEAN DEFAULT TRUE,
     FOREIGN KEY (category_id) REFERENCES categories (id)
+);
+
+CREATE TABLE product_branch_availability (
+    product_id BIGINT NOT NULL,
+    branch_id BIGINT NOT NULL,
+    available BOOLEAN DEFAULT TRUE,
+    PRIMARY KEY (product_id, branch_id),
+    FOREIGN KEY (product_id) REFERENCES products (id),
+    FOREIGN KEY (branch_id) REFERENCES branches (id)
 );
 
 CREATE TABLE offers (
