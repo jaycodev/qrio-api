@@ -1,5 +1,6 @@
 package com.qrio.order.model;
 
+import com.qrio.product.model.Product;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -27,8 +28,9 @@ public class OrderItem {
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @Column(nullable = false)
-    private Long dishId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(nullable = false)
     private Integer quantity;

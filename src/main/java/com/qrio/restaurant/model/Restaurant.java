@@ -1,5 +1,7 @@
 package com.qrio.restaurant.model;
 
+import com.qrio.admin.model.Admin;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +20,9 @@ public class Restaurant {
     @Column(insertable = false, updatable = false)
     private String code;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin admin;
 
     @Column(nullable = false, length = 150)
     private String name;
@@ -27,10 +30,11 @@ public class Restaurant {
     @Column(columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "logo_url", columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     private String logoUrl;
 
-    @Column(name = "created_at")
+    private Boolean isActive = false;
+
     private LocalDateTime createdAt;
 
     @PrePersist

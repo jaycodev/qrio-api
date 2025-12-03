@@ -1,10 +1,55 @@
 package com.qrio.branch.repository;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+
+import com.qrio.branch.dto.response.BranchDetailResponse;
+import com.qrio.branch.dto.response.BranchListResponse;
 import com.qrio.branch.model.Branch;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.qrio.shared.response.OptionResponse;
 
 import java.util.List;
+import java.util.Optional;
 
-public interface BranchRepository extends JpaRepository<Branch, Long> {
-    List<Branch> findByRestaurantId(Long restaurantId);
+public interface BranchRepository extends CrudRepository<Branch, Long> {
+    @Query("""
+        SELECT 
+            b.id AS id,
+            b.code AS code,
+            b.restaurant.id AS restaurantId,
+            b.name AS name,
+            b.address AS address,
+            b.phone AS phone,
+            b.schedule AS schedule,
+            b.createdAt AS createdAt
+        FROM Branch b
+        WHERE (:restaurantId IS NULL OR b.restaurant.id = :restaurantId)
+        ORDER BY b.id DESC
+    """)
+    List<BranchListResponse> findList(Long restaurantId);
+
+    @Query("""
+        SELECT 
+            b.id AS id,
+            b.code AS code,
+            b.restaurant.id AS restaurantId,
+            b.name AS name,
+            b.address AS address,
+            b.phone AS phone,
+            b.schedule AS schedule,
+            b.createdAt AS createdAt
+        FROM Branch b
+        WHERE b.id = :id
+    """)
+    Optional<BranchDetailResponse> findDetailById(Long id);
+
+    @Query("""
+        SELECT 
+            b.id AS value,
+            b.name AS label
+        FROM Branch b
+        WHERE b.restaurant.id = :restaurantId
+        ORDER BY b.name
+    """)
+    List<OptionResponse> findForOptions(Long restaurantId);
 }

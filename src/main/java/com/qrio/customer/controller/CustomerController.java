@@ -4,64 +4,71 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.qrio.customer.dto.request.CreateCustomerRequest;
 import com.qrio.customer.dto.request.UpdateCustomerRequest;
-import com.qrio.customer.dto.response.CustomerResponse;
+import com.qrio.customer.dto.response.CustomerDetailResponse;
+import com.qrio.customer.dto.response.CustomerListResponse;
 import com.qrio.customer.service.CustomerService;
+import com.qrio.shared.api.ApiSuccess;
+import com.qrio.shared.validation.ValidationMessages;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/customers")
 @RequiredArgsConstructor
+@Validated
+@Tag(name = "Customers", description = "Operations related to customers")
 public class CustomerController {
 
     private final CustomerService customerService;
 
-    @Operation(summary = "Create a new customer")
-    @PostMapping
-    public ResponseEntity<CustomerResponse> createCustomer(@RequestBody CreateCustomerRequest request) {
-        CustomerResponse response = customerService.createCustomer(request);
-        return new ResponseEntity<>(response, HttpStatus.CREATED);
-    }
-
-    @Operation(summary = "Update a customer by ID")
-    @PutMapping("/{id}")
-    public ResponseEntity<CustomerResponse> updateCustomer(
-            @PathVariable Long id,
-            @RequestBody UpdateCustomerRequest request) {
-        CustomerResponse response = customerService.updateCustomer(id, request);
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Get a customer by ID")
-    @GetMapping("/{id}")
-    public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long id) {
-        CustomerResponse response = customerService.getCustomerById(id);
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Get a customer by Firebase UID")
-    @GetMapping("/firebase/{uid}")
-    public ResponseEntity<CustomerResponse> getCustomerByFirebaseUid(@PathVariable("uid") String uid) {
-        CustomerResponse response = customerService.getCustomerByFirebaseUid(uid);
-        return ResponseEntity.ok(response);
-    }
-
-    @Operation(summary = "Get all customers")
     @GetMapping
-    public ResponseEntity<List<CustomerResponse>> getAllCustomers() {
-        List<CustomerResponse> response = customerService.getAllCustomers();
+    @Operation(summary = "List all customers")
+    public ResponseEntity<ApiSuccess<List<CustomerListResponse>>> list() {
+        List<CustomerListResponse> customers = customerService.getList();
+        ApiSuccess<List<CustomerListResponse>> response = new ApiSuccess<>(
+                customers.isEmpty() ? "No customers found" : "Customers listed successfully",
+                customers);
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Deactivate a customer by ID")
-    @PatchMapping("/{id}/deactivate")
-    public ResponseEntity<CustomerResponse> deactivateCustomer(@PathVariable Long id) {
-        CustomerResponse response = customerService.deactivateCustomer(id);
-        return ResponseEntity.ok(response);
+    @GetMapping("/{id}")
+    @Operation(summary = "Get a customer by ID")
+    public ResponseEntity<ApiSuccess<CustomerDetailResponse>> get(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
+        CustomerDetailResponse customer = customerService.getDetailById(id);
+        return ResponseEntity.ok(new ApiSuccess<>("Customer found", customer));
+    }
+
+    @GetMapping("/firebase/{uid}")
+    @Operation(summary = "Get a customer by Firebase UID")
+    public ResponseEntity<ApiSuccess<CustomerDetailResponse>> getByFirebaseUid(@PathVariable("uid") String uid) {
+        CustomerDetailResponse customer = customerService.getByFirebaseUid(uid);
+        return ResponseEntity.ok(new ApiSuccess<>("Customer found", customer));
+    }
+
+    @PostMapping
+    @Operation(summary = "Create a new customer")
+    public ResponseEntity<ApiSuccess<CustomerListResponse>> create(@Valid @RequestBody CreateCustomerRequest request) {
+        CustomerListResponse created = customerService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiSuccess<>("Customer created successfully", created));
+    }
+
+    @PutMapping("/{id}")
+    @Operation(summary = "Update a customer by ID")
+    public ResponseEntity<ApiSuccess<CustomerListResponse>> update(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
+            @Valid @RequestBody UpdateCustomerRequest request) {
+        CustomerListResponse result = customerService.update(id, request);
+        return ResponseEntity.ok(new ApiSuccess<>("Customer updated successfully", result));
     }
 }

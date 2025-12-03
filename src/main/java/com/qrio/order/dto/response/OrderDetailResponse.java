@@ -21,7 +21,7 @@ public record OrderDetailResponse(
     }
 
     public record OrderItem(
-        Long dishId,
+        Long productId,
         Integer quantity,
         BigDecimal unitPrice,
         BigDecimal subtotal

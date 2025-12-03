@@ -1,43 +1,20 @@
 package com.qrio.restaurant.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class UpdateRestaurantRequest {
-    private Long userId;
-    @Size(max = 150)
-    private String name;
-    private String description;
-    private String logoUrl;
+public record UpdateRestaurantRequest(
+    @NotNull(message = "Admin ID is required")
+    Long adminId,
 
-    public Long getUserId() {
-        return userId;
-    }
+    @NotBlank(message = "Name is required")
+    @Size(max = 150, message = "Name must not exceed 150 characters")
+    String name,
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
+    String description,
+    
+    String logoUrl,
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getLogoUrl() {
-        return logoUrl;
-    }
-
-    public void setLogoUrl(String logoUrl) {
-        this.logoUrl = logoUrl;
-    }
-}
+    Boolean isActive
+) {}

@@ -3,9 +3,9 @@ package com.qrio.customer.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.qrio.customer.model.type.CustomerStatus;
 import com.qrio.order.model.Order;
 import com.qrio.paymentMethod.model.PaymentMethod;
+import com.qrio.shared.type.Status;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,7 +26,6 @@ import lombok.NoArgsConstructor;
 @Data
 @Table(name = "customers")
 public class Customer {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,7 +33,7 @@ public class Customer {
     @Column(insertable = false, updatable = false)
     private String code;
 
-    @Column(name = "firebase_uid", unique = true)
+    @Column(unique = true)
     private String firebaseUid;
 
     private String name;
@@ -44,12 +43,10 @@ public class Customer {
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    private CustomerStatus status;
+    private Status status;
 
-    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    // relación con otras tablas
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Order> orders;
 

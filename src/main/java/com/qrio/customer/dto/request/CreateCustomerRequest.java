@@ -1,6 +1,7 @@
 package com.qrio.customer.dto.request;
 
-import com.qrio.customer.model.type.CustomerStatus;
+import com.qrio.shared.type.Status;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -15,7 +16,6 @@ public record CreateCustomerRequest(
 
         @Size(max = 20, message = "Phone cannot exceed 20 characters") String phone,
 
-        CustomerStatus status // opcional, si no se envía se puede asumir ACTIVE
-
+        Status status
 ) {
 }

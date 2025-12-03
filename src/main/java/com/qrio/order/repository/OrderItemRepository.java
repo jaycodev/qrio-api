@@ -12,7 +12,7 @@ import com.qrio.order.model.OrderItem;
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     @Query("""
         SELECT 
-            li.dishId AS dishId,
+            li.product.id AS productId,
             li.quantity AS quantity,
             li.unitPrice AS unitPrice,
             li.subtotal AS subtotal

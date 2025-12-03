@@ -1,5 +1,7 @@
 package com.qrio.branch.model;
 
+import com.qrio.restaurant.model.Restaurant;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +20,9 @@ public class Branch {
     @Column(insertable = false, updatable = false)
     private String code;
 
-    @Column(name = "restaurant_id", nullable = false)
-    private Long restaurantId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "restaurant_id", nullable = false)
+    private Restaurant restaurant;
 
     @Column(nullable = false, length = 150)
     private String name;

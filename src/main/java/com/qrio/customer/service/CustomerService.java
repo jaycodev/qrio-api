@@ -5,25 +5,39 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import com.qrio.customer.dto.request.CreateCustomerRequest;
 import com.qrio.customer.dto.request.UpdateCustomerRequest;
-
-import com.qrio.customer.dto.response.CustomerResponse;
+import com.qrio.customer.dto.response.CustomerDetailResponse;
+import com.qrio.customer.dto.response.CustomerListResponse;
 import com.qrio.customer.model.Customer;
-import com.qrio.customer.model.type.CustomerStatus;
 import com.qrio.customer.repository.CustomerRepository;
+import com.qrio.shared.exception.ResourceNotFoundException;
+import com.qrio.shared.type.Status;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Validated
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    @Transactional(readOnly = true)
+    public List<CustomerListResponse> getList() {
+        return customerRepository.findList();
+    }
+
+    @Transactional(readOnly = true)
+    public CustomerDetailResponse getDetailById(Long id) {
+        return customerRepository.findDetailById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+    }
+
     @Transactional
-    public CustomerResponse createCustomer(CreateCustomerRequest request) {
+    public CustomerListResponse create(CreateCustomerRequest request) {
         if (customerRepository.existsByFirebaseUid(request.firebaseUid())) {
             throw new IllegalArgumentException("Customer with this Firebase UID already exists");
         }
@@ -37,17 +51,17 @@ public class CustomerService {
         customer.setName(request.name());
         customer.setEmail(request.email());
         customer.setPhone(request.phone());
-        customer.setStatus(request.status() != null ? request.status() : CustomerStatus.ACTIVE);
+        customer.setStatus(request.status() != null ? request.status() : Status.ACTIVO);
         customer.setCreatedAt(LocalDateTime.now());
 
         Customer saved = customerRepository.save(customer);
-        return mapToResponse(saved);
+        return toListResponse(saved);
     }
 
     @Transactional
-    public CustomerResponse updateCustomer(Long id, UpdateCustomerRequest request) {
+    public CustomerListResponse update(Long id, UpdateCustomerRequest request) {
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
 
         customerRepository.findByEmail(request.email())
                 .filter(c -> !c.getId().equals(id))
@@ -62,49 +76,30 @@ public class CustomerService {
         customer.setStatus(request.status() != null ? request.status() : customer.getStatus());
 
         Customer updated = customerRepository.save(customer);
-        return mapToResponse(updated);
+        return toListResponse(updated);
     }
 
     @Transactional(readOnly = true)
-    public CustomerResponse getCustomerById(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id: " + id));
-        return mapToResponse(customer);
-    }
-
-     @Transactional(readOnly = true)
-     public CustomerResponse getCustomerByFirebaseUid(String firebaseUid) {
-         Customer customer = customerRepository.findByFirebaseUid(firebaseUid) // <--- ¡CAMBIADO AQUÍ!
-                 .orElseThrow(
-                         () -> new IllegalArgumentException("Customer not found with Firebase UID: " + firebaseUid));
-         return mapToResponse(customer);
-     }
-
-    @Transactional(readOnly = true)
-    public List<CustomerResponse> getAllCustomers() {
-        return customerRepository.findAll()
-                .stream()
-                .map(this::mapToResponse)
-                .toList();
-    }
-
-    @Transactional
-    public CustomerResponse deactivateCustomer(Long id) {
-        Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Customer not found with id: " + id));
-
-        customer.setStatus(CustomerStatus.INACTIVE);
-        Customer updated = customerRepository.save(customer);
-        return mapToResponse(updated);
-    }
-
-    private CustomerResponse mapToResponse(Customer customer) {
-        return new CustomerResponse(
+    public CustomerDetailResponse getByFirebaseUid(String firebaseUid) {
+        Customer customer = customerRepository.findByFirebaseUid(firebaseUid)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Customer not found with Firebase UID: " + firebaseUid));
+        return new CustomerDetailResponse(
                 customer.getId(),
                 customer.getFirebaseUid(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),
+                customer.getStatus(),
+                customer.getCreatedAt());
+    }
+
+    private CustomerListResponse toListResponse(Customer customer) {
+        return new CustomerListResponse(
+                customer.getId(),
+                customer.getFirebaseUid(),
+                customer.getName(),
+                customer.getEmail(),
                 customer.getStatus(),
                 customer.getCreatedAt());
     }
