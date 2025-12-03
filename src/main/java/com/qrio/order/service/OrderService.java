@@ -41,8 +41,8 @@ public class OrderService {
     private final DiningTableRepository diningTableRepository;
     private final ProductRepository productRepository;
 
-    public List<OrderListResponse> getList(Long restaurantId, Long branchId) {
-        return orderRepository.findList(restaurantId, branchId);
+    public List<OrderListResponse> getList(Long branchId) {
+        return orderRepository.findList(branchId);
     }
 
     public OrderFilterOptionsResponse getFilterOptions(Long branchId) {
