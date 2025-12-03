@@ -4,9 +4,10 @@ import java.math.BigDecimal;
 
 public record OfferListResponse(
     Long id,
+    String code,
     Long restaurantId,
     String title,
     String description,
-    BigDecimal offerPrice,
+    BigDecimal offerDiscountPercentage,
     Boolean active
 ) {}

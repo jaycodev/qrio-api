@@ -32,7 +32,7 @@ public interface OrderRepository extends CrudRepository<Order, Long> {
         LEFT JOIN o.orderItems oi
         JOIN o.diningTable dt
         JOIN dt.branch b
-        WHERE b.restaurantId = :restaurantId
+        WHERE b.restaurant.id = :restaurantId
         AND (:branchId IS NULL OR b.id = :branchId)
         GROUP BY o.id, o.code, o.diningTable.id, o.diningTable.tableNumber, o.customer.id, o.customer.code, o.customer.name, o.status, o.total, o.people
         ORDER BY o.id DESC

@@ -2,71 +2,67 @@ package com.qrio.branch.controller;
 
 import com.qrio.branch.dto.request.CreateBranchRequest;
 import com.qrio.branch.dto.request.UpdateBranchRequest;
-import com.qrio.branch.dto.response.BranchResponse;
-import com.qrio.branch.model.Branch;
+import com.qrio.branch.dto.response.BranchDetailResponse;
+import com.qrio.branch.dto.response.BranchListResponse;
 import com.qrio.branch.service.BranchService;
 import com.qrio.shared.api.ApiSuccess;
+import com.qrio.shared.validation.ValidationMessages;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/api/branches")
+@RequestMapping("/branches")
+@RequiredArgsConstructor
+@Validated
+@Tag(name = "Branches", description = "Operations related to branches")
 public class BranchController {
-    private final BranchService service;
-
-    public BranchController(BranchService service) {
-        this.service = service;
-    }
+    private final BranchService branchService;
 
     @GetMapping
-    public ResponseEntity<ApiSuccess<List<BranchResponse>>> list(
-            @RequestParam(value = "restaurantId", required = false) Long restaurantId) {
-        List<BranchResponse> data = (restaurantId == null ? service.list() : service.listByRestaurant(restaurantId))
-                .stream().map(BranchResponse::from).collect(Collectors.toList());
-        return ResponseEntity.ok(new ApiSuccess<>("Listado de sucursales", data));
+    @Operation(summary = "List branches by restaurant")
+    public ResponseEntity<ApiSuccess<List<BranchListResponse>>> list(
+            @RequestParam(required = false) Long restaurantId) {
+        List<BranchListResponse> branches = branchService.getList(restaurantId);
+        ApiSuccess<List<BranchListResponse>> response = new ApiSuccess<>(
+                branches.isEmpty() ? "No branches found" : "Branches listed successfully",
+                branches);
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiSuccess<BranchResponse>> get(@PathVariable Long id) {
-        BranchResponse data = BranchResponse.from(service.get(id));
-        return ResponseEntity.ok(new ApiSuccess<>("Detalle de sucursal", data));
+    @Operation(summary = "Get a branch by ID")
+    public ResponseEntity<ApiSuccess<BranchDetailResponse>> get(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
+        BranchDetailResponse branch = branchService.getDetailById(id);
+        return ResponseEntity.ok(new ApiSuccess<>("Branch found", branch));
     }
 
     @PostMapping
-    public ResponseEntity<ApiSuccess<BranchResponse>> create(@Validated @RequestBody CreateBranchRequest req) {
-        Branch b = new Branch();
-        b.setRestaurantId(req.getRestaurantId());
-        b.setName(req.getName());
-        b.setAddress(req.getAddress());
-        b.setPhone(req.getPhone());
-        b.setSchedule(req.getSchedule());
-        Branch saved = service.create(b);
-        BranchResponse data = BranchResponse.from(saved);
-        return ResponseEntity.created(URI.create("/api/branches/" + saved.getId()))
-                .body(new ApiSuccess<>("Sucursal creada", data));
+    @Operation(summary = "Create a new branch")
+    public ResponseEntity<ApiSuccess<BranchListResponse>> create(@Valid @RequestBody CreateBranchRequest request) {
+        BranchListResponse created = branchService.create(request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(new ApiSuccess<>("Branch created successfully", created));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiSuccess<BranchResponse>> update(@PathVariable Long id,
-            @Validated @RequestBody UpdateBranchRequest req) {
-        Branch b = new Branch();
-        b.setRestaurantId(req.getRestaurantId());
-        b.setName(req.getName());
-        b.setAddress(req.getAddress());
-        b.setPhone(req.getPhone());
-        b.setSchedule(req.getSchedule());
-        Branch updated = service.update(id, b);
-        return ResponseEntity.ok(new ApiSuccess<>("Sucursal actualizada", BranchResponse.from(updated)));
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiSuccess<String>> delete(@PathVariable Long id) {
-        service.delete(id);
-        return ResponseEntity.ok(new ApiSuccess<>("Sucursal eliminada", "deleted"));
+    @Operation(summary = "Update a branch by ID")
+    public ResponseEntity<ApiSuccess<BranchListResponse>> update(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
+            @Valid @RequestBody UpdateBranchRequest request) {
+        BranchListResponse result = branchService.update(id, request);
+        return ResponseEntity.ok(new ApiSuccess<>("Branch updated successfully", result));
     }
 }

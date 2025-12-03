@@ -6,12 +6,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.qrio.offer.dto.request.CreateOfferProductRequest;
 import com.qrio.offer.dto.request.CreateOfferRequest;
+import com.qrio.offer.dto.request.UpdateOfferProductRequest;
 import com.qrio.offer.dto.request.UpdateOfferRequest;
 import com.qrio.offer.dto.response.OfferDetailResponse;
 import com.qrio.offer.dto.response.OfferListResponse;
 import com.qrio.offer.model.Offer;
+import com.qrio.offer.model.OfferProduct;
+import com.qrio.offer.repository.OfferProductRepository;
 import com.qrio.offer.repository.OfferRepository;
+import com.qrio.product.model.Product;
+import com.qrio.product.repository.ProductRepository;
+import com.qrio.restaurant.model.Restaurant;
+import com.qrio.restaurant.repository.RestaurantRepository;
 import com.qrio.shared.exception.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -22,26 +30,46 @@ import lombok.RequiredArgsConstructor;
 @Validated
 public class OfferService {
     private final OfferRepository offerRepository;
+    private final OfferProductRepository offerProductRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final ProductRepository productRepository;
 
     public List<OfferListResponse> getList() {
         return offerRepository.findList();
     }
 
     public OfferDetailResponse getDetailById(Long id) {
-        return offerRepository.findDetailById(id)
+        OfferDetailResponse base = offerRepository.findDetailById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));
+
+        return base.withProducts(offerProductRepository.findOfferProductsByOfferId(id));
     }
 
     @Transactional
     public OfferListResponse create(CreateOfferRequest request) {
+        Restaurant restaurant = restaurantRepository.findById(request.restaurantId())
+                .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
+
         Offer offer = new Offer();
-        offer.setRestaurantId(request.restaurantId());
+        offer.setRestaurant(restaurant);
         offer.setTitle(request.title());
         offer.setDescription(request.description());
-        offer.setOfferPrice(request.offerPrice());
+        offer.setOfferDiscountPercentage(request.offerDiscountPercentage());
         offer.setActive(request.active());
 
         Offer saved = offerRepository.save(offer);
+
+        for (CreateOfferProductRequest productDto : request.products()) {
+            Product product = productRepository.findById(productDto.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productDto.productId()));
+
+            OfferProduct offerProduct = new OfferProduct();
+            offerProduct.setOffer(saved);
+            offerProduct.setProduct(product);
+            offerProduct.setQuantity(productDto.quantity());
+
+            offerProductRepository.save(offerProduct);
+        }
 
         return toListResponse(saved);
     }
@@ -53,10 +81,24 @@ public class OfferService {
 
         offer.setTitle(request.title());
         offer.setDescription(request.description());
-        offer.setOfferPrice(request.offerPrice());
+        offer.setOfferDiscountPercentage(request.offerDiscountPercentage());
         offer.setActive(request.active());
 
         Offer updated = offerRepository.save(offer);
+
+        offerProductRepository.deleteAllByOffer(updated);
+
+        for (UpdateOfferProductRequest productDto : request.products()) {
+            Product product = productRepository.findById(productDto.productId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productDto.productId()));
+
+            OfferProduct offerProduct = new OfferProduct();
+            offerProduct.setOffer(updated);
+            offerProduct.setProduct(product);
+            offerProduct.setQuantity(productDto.quantity());
+
+            offerProductRepository.save(offerProduct);
+        }
 
         return toListResponse(updated);
     }
@@ -64,10 +106,11 @@ public class OfferService {
     public OfferListResponse toListResponse(Offer offer) {
         return new OfferListResponse(
                 offer.getId(),
-                offer.getRestaurantId(),
+                offer.getCode(),
+                offer.getRestaurant().getId(),
                 offer.getTitle(),
                 offer.getDescription(),
-                offer.getOfferPrice(),
+                offer.getOfferDiscountPercentage(),
                 offer.getActive());
     }
 }

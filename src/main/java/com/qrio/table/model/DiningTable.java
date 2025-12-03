@@ -19,10 +19,9 @@ public class DiningTable {
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
 
-    @Column(name = "table_number", nullable = false)
+    @Column(nullable = false)
     private Integer tableNumber;
 
-    @Column(name = "qr_code", nullable = false, length = 255, unique = true)
+    @Column(nullable = false, length = 255, unique = true)
     private String qrCode;
-
 }

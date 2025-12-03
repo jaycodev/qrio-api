@@ -41,7 +41,7 @@ public class Order {
     private DiningTable diningTable;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
     @Enumerated(EnumType.STRING)

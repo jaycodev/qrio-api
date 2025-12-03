@@ -8,9 +8,9 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 
 public record UpdateOrderItemRequest(
-    @NotNull(message = "Dish ID is required")
-    @Min(value = 1, message = "Dish ID must be at least 1")
-    Long dishId,
+    @NotNull(message = "Product ID is required")
+    @Min(value = 1, message = "Product ID must be at least 1")
+    Long productId,
 
     @NotNull(message = "Quantity is required")
     @Min(value = 1, message = "Quantity must be at least 1")

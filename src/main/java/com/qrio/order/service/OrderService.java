@@ -10,6 +10,8 @@ import org.springframework.validation.annotation.Validated;
 
 import com.qrio.customer.model.Customer;
 import com.qrio.customer.repository.CustomerRepository;
+import com.qrio.product.model.Product;
+import com.qrio.product.repository.ProductRepository;
 import com.qrio.table.model.DiningTable;
 import com.qrio.table.repository.DiningTableRepository;
 import com.qrio.order.dto.request.CreateOrderItemRequest;
@@ -37,6 +39,7 @@ public class OrderService {
     private final OrderItemRepository orderItemRepository;
     private final CustomerRepository customerRepository;
     private final DiningTableRepository diningTableRepository;
+    private final ProductRepository productRepository;
 
     public List<OrderListResponse> getList(Long restaurantId, Long branchId) {
         return orderRepository.findList(restaurantId, branchId);
@@ -76,12 +79,16 @@ public class OrderService {
         Order saved = orderRepository.save(order);
 
         for (CreateOrderItemRequest itemDto : request.items()) {
+            Product product = productRepository.findById(itemDto.productId())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException("Product not found with ID: " + itemDto.productId()));
+
             OrderItem item = new OrderItem();
             item.setOrder(saved);
-            item.setDishId(itemDto.dishId());
+            item.setProduct(product);
             item.setQuantity(itemDto.quantity());
             item.setUnitPrice(itemDto.unitPrice());
-            item.setSubtotal(itemDto.unitPrice().multiply(java.math.BigDecimal.valueOf(itemDto.quantity())));
+            item.setSubtotal(itemDto.unitPrice().multiply(BigDecimal.valueOf(itemDto.quantity())));
 
             orderItemRepository.save(item);
         }
@@ -106,9 +113,13 @@ public class OrderService {
         orderItemRepository.deleteAllByOrder(updated);
 
         for (UpdateOrderItemRequest itemDto : request.items()) {
+            Product product = productRepository.findById(itemDto.productId())
+                    .orElseThrow(
+                            () -> new ResourceNotFoundException("Product not found with ID: " + itemDto.productId()));
+
             OrderItem item = new OrderItem();
             item.setOrder(updated);
-            item.setDishId(itemDto.dishId());
+            item.setProduct(product);
             item.setQuantity(itemDto.quantity());
             item.setUnitPrice(itemDto.unitPrice());
             item.setSubtotal(itemDto.unitPrice().multiply(BigDecimal.valueOf(itemDto.quantity())));
@@ -136,7 +147,7 @@ public class OrderService {
                 order.getCustomer().getId(),
                 order.getCustomer().getCode(),
                 order.getCustomer().getName(),
-                
+
                 order.getStatus(),
                 order.getTotal(),
                 order.getPeople(),

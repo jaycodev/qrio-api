@@ -2,27 +2,31 @@ SET search_path TO public;
 
 BEGIN;
 
-INSERT INTO users (firebase_uid, name, email, phone, status) VALUES
-('fb_uid_001', 'Juan Pérez', 'juan.perez@email.com', '+51987654321', 'ACTIVO'),
-('fb_uid_002', 'María García', 'maria.garcia@email.com', '+51987654322', 'ACTIVO'),
-('fb_uid_003', 'Carlos López', 'carlos.lopez@email.com', '+51987654323', 'ACTIVO'),
-('fb_uid_004', 'Ana Martínez', 'ana.martinez@email.com', '+51987654324', 'ACTIVO'),
-('fb_uid_005', 'Luis Rodríguez', 'luis.rodriguez@email.com', '+51987654325', 'ACTIVO'),
-('fb_uid_006', 'Carmen Sánchez', 'carmen.sanchez@email.com', '+51987654326', 'ACTIVO'),
-('fb_uid_007', 'Pedro Ramírez', 'pedro.ramirez@email.com', '+51987654327', 'INACTIVO'),
-('fb_uid_008', 'Laura Torres', 'laura.torres@email.com', '+51987654328', 'ACTIVO'),
-('fb_uid_009', 'Jorge Flores', 'jorge.flores@email.com', '+51987654329', 'ACTIVO'),
-('fb_uid_010', 'Patricia Vargas', 'patricia.vargas@email.com', '+51987654330', 'ACTIVO'),
-('fb_uid_011', 'Roberto Castro', 'roberto.castro@email.com', '+51987654331', 'ACTIVO'),
-('fb_uid_012', 'Elena Jiménez', 'elena.jimenez@email.com', '+51987654332', 'ACTIVO'),
-('fb_uid_013', 'Miguel Herrera', 'miguel.herrera@email.com', '+51987654333', 'ACTIVO'),
-('fb_uid_014', 'Isabel Morales', 'isabel.morales@email.com', '+51987654334', 'ACTIVO'),
-('fb_uid_015', 'Francisco Ruiz', 'francisco.ruiz@email.com', '+51987654335', 'INACTIVO'),
-('fb_uid_016', 'Rosa Díaz', 'rosa.diaz@email.com', '+51987654336', 'ACTIVO'),
-('fb_uid_017', 'Antonio Mendoza', 'antonio.mendoza@email.com', '+51987654337', 'ACTIVO'),
-('fb_uid_018', 'Lucía Reyes', 'lucia.reyes@email.com', '+51987654338', 'ACTIVO'),
-('fb_uid_019', 'Ricardo Vega', 'ricardo.vega@email.com', '+51987654339', 'ACTIVO'),
-('fb_uid_020', 'Sofía Campos', 'sofia.campos@email.com', '+51987654340', 'ACTIVO');
+INSERT INTO app_admins (name, email, role) VALUES
+('Admin Super Usuario', 'admin.super@qrio.com', 'ADMIN_SUPER'),
+('Soporte Técnico', 'soporte@qrio.com', 'SOPORTE');
+
+INSERT INTO admins (name, email, phone, status) VALUES
+('Juan Pérez', 'juan.perez@email.com', '+51987654321', 'ACTIVO'),
+('María García', 'maria.garcia@email.com', '+51987654322', 'ACTIVO'),
+('Carlos López', 'carlos.lopez@email.com', '+51987654323', 'ACTIVO'),
+('Ana Martínez', 'ana.martinez@email.com', '+51987654324', 'ACTIVO'),
+('Luis Rodríguez', 'luis.rodriguez@email.com', '+51987654325', 'ACTIVO'),
+('Carmen Sánchez', 'carmen.sanchez@email.com', '+51987654326', 'ACTIVO'),
+('Pedro Ramírez', 'pedro.ramirez@email.com', '+51987654327', 'INACTIVO'),
+('Laura Torres', 'laura.torres@email.com', '+51987654328', 'ACTIVO'),
+('Jorge Flores', 'jorge.flores@email.com', '+51987654329', 'ACTIVO'),
+('Patricia Vargas', 'patricia.vargas@email.com', '+51987654330', 'ACTIVO'),
+('Roberto Castro', 'roberto.castro@email.com', '+51987654331', 'ACTIVO'),
+('Elena Jiménez', 'elena.jimenez@email.com', '+51987654332', 'ACTIVO'),
+('Miguel Herrera', 'miguel.herrera@email.com', '+51987654333', 'ACTIVO'),
+('Isabel Morales', 'isabel.morales@email.com', '+51987654334', 'ACTIVO'),
+('Francisco Ruiz', 'francisco.ruiz@email.com', '+51987654335', 'INACTIVO'),
+('Rosa Díaz', 'rosa.diaz@email.com', '+51987654336', 'ACTIVO'),
+('Antonio Mendoza', 'antonio.mendoza@email.com', '+51987654337', 'ACTIVO'),
+('Lucía Reyes', 'lucia.reyes@email.com', '+51987654338', 'ACTIVO'),
+('Ricardo Vega', 'ricardo.vega@email.com', '+51987654339', 'ACTIVO'),
+('Sofía Campos', 'sofia.campos@email.com', '+51987654340', 'ACTIVO');
 
 INSERT INTO customers (firebase_uid, name, email, phone, status) VALUES
 ('customer_001', 'Alberto Suárez', 'alberto.suarez@email.com', '+51912345601', 'ACTIVO'),
@@ -68,27 +72,31 @@ INSERT INTO payment_methods (customer_id, type, payment_token, last4, brand) VAL
 (19, 'YAPE', 'yape_912345619', NULL, NULL),
 (20, 'TARJETA', 'tok_amex_340012345678901', '8901', 'Amex');
 
-INSERT INTO restaurants (user_id, name, description, logo_url) VALUES
-(1, 'El Sabor Peruano', 'Comida criolla tradicional', 'https://example.com/logos/sabor_peruano.png'),
-(2, 'Pizzería Bella Napoli', 'Auténtica pizza italiana', 'https://example.com/logos/bella_napoli.png'),
-(3, 'Sushi Bar Tokio', 'Sushi y comida japonesa', 'https://example.com/logos/sushi_tokio.png'),
-(4, 'Parrilla Argentina', 'Carnes a la parrilla', 'https://example.com/logos/parrilla_arg.png'),
-(5, 'Café Gourmet Lima', 'Cafetería especializada', 'https://example.com/logos/cafe_gourmet.png'),
-(6, 'Marisquería El Puerto', 'Pescados y mariscos frescos', 'https://example.com/logos/el_puerto.png'),
-(7, 'Restaurante Vegetalia', 'Comida vegetariana y vegana', 'https://example.com/logos/vegetalia.png'),
-(8, 'Chifa Oriental', 'Cocina chino-peruana', 'https://example.com/logos/chifa.png'),
-(9, 'Taquería Mexicana', 'Tacos y comida mexicana', 'https://example.com/logos/taqueria.png'),
-(10, 'Hamburguesería Premium', 'Hamburguesas gourmet', 'https://example.com/logos/burgers.png'),
-(11, 'Cevichería Costanera', 'Ceviches y tiraditos', 'https://example.com/logos/cevicheria.png'),
-(12, 'Pollos a la Brasa Don José', 'Pollo a la brasa tradicional', 'https://example.com/logos/don_jose.png'),
-(13, 'Panadería Artesanal', 'Pan y postres caseros', 'https://example.com/logos/panaderia.png'),
-(14, 'Restaurante Fusión', 'Cocina de autor', 'https://example.com/logos/fusion.png'),
-(15, 'Trattoria Italiana', 'Pastas y risottos', 'https://example.com/logos/trattoria.png'),
-(16, 'BBQ & Ribs House', 'Costillas y barbacoa', 'https://example.com/logos/bbq_house.png'),
-(17, 'Thai Food Express', 'Comida tailandesa', 'https://example.com/logos/thai_food.png'),
-(18, 'Sandwichería Gourmet', 'Sandwiches especiales', 'https://example.com/logos/sandwiches.png'),
-(19, 'Anticuchería La Esquina', 'Anticuchos y parrillas', 'https://example.com/logos/anticucheria.png'),
-(20, 'Heladería Artesanal', 'Helados naturales', 'https://example.com/logos/heladeria.png');
+INSERT INTO restaurants (admin_id, name, description, logo_url, is_active) VALUES
+(1, 'El Sabor Peruano', 'Comida criolla tradicional', 'https://example.com/logos/sabor_peruano.png', TRUE),
+(2, 'Pizzería Bella Napoli', 'Auténtica pizza italiana', 'https://example.com/logos/bella_napoli.png', TRUE),
+(3, 'Sushi Bar Tokio', 'Sushi y comida japonesa', 'https://example.com/logos/sushi_tokio.png', TRUE),
+(4, 'Parrilla Argentina', 'Carnes a la parrilla', 'https://example.com/logos/parrilla_arg.png', TRUE),
+(5, 'Café Gourmet Lima', 'Cafetería especializada', 'https://example.com/logos/cafe_gourmet.png', TRUE),
+(6, 'Marisquería El Puerto', 'Pescados y mariscos frescos', 'https://example.com/logos/el_puerto.png', TRUE),
+(7, 'Restaurante Vegetalia', 'Comida vegetariana y vegana', 'https://example.com/logos/vegetalia.png', FALSE),
+(8, 'Chifa Oriental', 'Cocina chino-peruana', 'https://example.com/logos/chifa.png', TRUE),
+(9, 'Taquería Mexicana', 'Tacos y comida mexicana', 'https://example.com/logos/taqueria.png', TRUE),
+(10, 'Hamburguesería Premium', 'Hamburguesas gourmet', 'https://example.com/logos/burgers.png', TRUE),
+(11, 'Cevichería Costanera', 'Ceviches y tiraditos', 'https://example.com/logos/cevicheria.png', TRUE),
+(12, 'Pollos a la Brasa Don José', 'Pollo a la brasa tradicional', 'https://example.com/logos/don_jose.png', TRUE),
+(13, 'Panadería Artesanal', 'Pan y postres caseros', 'https://example.com/logos/panaderia.png', TRUE),
+(14, 'Restaurante Fusión', 'Cocina de autor', 'https://example.com/logos/fusion.png', FALSE),
+(15, 'Trattoria Italiana', 'Pastas y risottos', 'https://example.com/logos/trattoria.png', TRUE),
+(16, 'BBQ & Ribs House', 'Costillas y barbacoa', 'https://example.com/logos/bbq_house.png', TRUE),
+(17, 'Thai Food Express', 'Comida tailandesa', 'https://example.com/logos/thai_food.png', TRUE),
+(18, 'Sandwichería Gourmet', 'Sandwiches especiales', 'https://example.com/logos/sandwiches.png', TRUE),
+(19, 'Anticuchería La Esquina', 'Anticuchos y parrillas', 'https://example.com/logos/anticucheria.png', TRUE),
+(20, 'Heladería Artesanal', 'Helados naturales', 'https://example.com/logos/heladeria.png', TRUE);
+
+INSERT INTO restaurant_activation_requests (restaurant_id, admin_id, status, comment) VALUES
+(7, 2, 'PENDIENTE', 'Esperando revisión de documentos'),
+(14, 4, 'PENDIENTE', 'Solicitud en proceso de evaluación');
 
 INSERT INTO branches (restaurant_id, name, address, phone, schedule) VALUES
 (1, 'El Sabor Peruano - Miraflores', 'Av. Larco 1234, Miraflores', '+5114567801', 'Lun-Dom 12:00-23:00'),
@@ -156,7 +164,7 @@ INSERT INTO categories (restaurant_id, name) VALUES
 (12, 'Pollos'),
 (13, 'Panes');
 
-INSERT INTO dishes (category_id, name, description, price, image_url, available) VALUES
+INSERT INTO products (category_id, name, description, price, image_url, available) VALUES
 (1, 'Causa Limeña', 'Causa rellena de pollo', 18.50, 'https://example.com/dishes/causa.jpg', TRUE),
 (1, 'Papa a la Huancaína', 'Papas con salsa de ají amarillo', 15.00, 'https://example.com/dishes/huancaina.jpg', TRUE),
 (2, 'Lomo Saltado', 'Carne salteada con papas fritas', 32.00, 'https://example.com/dishes/lomo.jpg', TRUE),
@@ -178,27 +186,73 @@ INSERT INTO dishes (category_id, name, description, price, image_url, available)
 (19, 'Pollo Entero', 'Pollo a la brasa con papas', 55.00, 'https://example.com/dishes/pollo.jpg', TRUE),
 (20, 'Croissant', 'Croissant de mantequilla', 8.50, 'https://example.com/dishes/croissant.jpg', TRUE);
 
-INSERT INTO offers (restaurant_id, title, description, offer_price, active) VALUES
-(1, '2x1 en Causas', 'Compra una causa y lleva la segunda gratis', 18.50, TRUE),
-(2, 'Pizza Familiar 50% OFF', 'Descuento en pizzas familiares', 52.50, TRUE),
-(3, 'Combo Sushi', '20 piezas de sushi variado', 75.00, TRUE),
-(4, 'Parrilla para 2', 'Parrillada completa para dos personas', 95.00, TRUE),
-(5, 'Café + Postre', 'Combo café y postre del día', 20.00, TRUE),
+INSERT INTO offers (restaurant_id, title, description, offer_discount_percentage, active) VALUES
+(1, '2x1 en Causas', 'Compra una causa y lleva la segunda gratis', 50.00, TRUE),
+(2, 'Pizza Familiar 50% OFF', 'Descuento en pizzas familiares', 50.00, TRUE),
+(3, 'Combo Sushi', '20 piezas de sushi variado', 15.00, TRUE),
+(4, 'Parrilla para 2', 'Parrillada completa para dos personas', 20.00, TRUE),
+(5, 'Café + Postre', 'Combo café y postre del día', 25.00, TRUE),
 (6, 'Martes de Ceviche', 'Ceviche con chicha morada', 30.00, TRUE),
-(7, 'Menú Vegano', 'Entrada + plato + jugo', 35.00, TRUE),
-(8, 'Combo Chifa', 'Chaufa + wantán frito + bebida', 28.00, TRUE),
-(9, 'Happy Hour Tacos', '5 tacos + cerveza', 40.00, TRUE),
-(10, 'Burger Doble', 'Dos hamburguesas + papas', 55.00, TRUE),
-(11, 'Ceviche Mixto XL', 'Ceviche mixto para compartir', 65.00, TRUE),
-(12, 'Pollo + Ensalada', 'Medio pollo + ensalada grande', 38.00, TRUE),
-(13, 'Desayuno Completo', 'Pan + café + huevos + jugo', 18.00, TRUE),
-(14, 'Menú Degustación', '5 tiempos del chef', 120.00, TRUE),
-(15, 'Pasta del Día', 'Pasta + ensalada + pan', 32.00, FALSE),
-(16, 'BBQ Ribs Combo', 'Costillas + 2 guarniciones', 68.00, TRUE),
-(17, 'Pad Thai Especial', 'Pad Thai con camarones', 42.00, TRUE),
-(18, 'Sandwich + Jugo', 'Cualquier sandwich + jugo natural', 22.00, TRUE),
-(19, 'Anticucho Mix', 'Anticuchos variados para 2', 48.00, TRUE),
-(20, '3 Bolas de Helado', 'Tres sabores a elección', 15.00, TRUE);
+(7, 'Menú Vegano', 'Entrada + plato + jugo', 20.00, TRUE),
+(8, 'Combo Chifa', 'Chaufa + wantán frito + bebida', 15.00, TRUE),
+(9, 'Happy Hour Tacos', '5 tacos + cerveza', 25.00, TRUE),
+(10, 'Burger Doble', 'Dos hamburguesas + papas', 30.00, TRUE),
+(11, 'Ceviche Mixto XL', 'Ceviche mixto para compartir', 20.00, TRUE),
+(12, 'Pollo + Ensalada', 'Medio pollo + ensalada grande', 25.00, TRUE),
+(13, 'Desayuno Completo', 'Pan + café + huevos + jugo', 20.00, TRUE),
+(14, 'Menú Degustación', '5 tiempos del chef', 15.00, TRUE),
+(15, 'Pasta del Día', 'Pasta + ensalada + pan', 10.00, FALSE),
+(16, 'BBQ Ribs Combo', 'Costillas + 2 guarniciones', 25.00, TRUE),
+(17, 'Pad Thai Especial', 'Pad Thai con camarones', 20.00, TRUE),
+(18, 'Sandwich + Jugo', 'Cualquier sandwich + jugo natural', 15.00, TRUE),
+(19, 'Anticucho Mix', 'Anticuchos variados para 2', 30.00, TRUE),
+(20, '3 Bolas de Helado', 'Tres sabores a elección', 20.00, TRUE);
+
+INSERT INTO offer_products (offer_id, product_id, quantity) VALUES
+(1, 1, 1),
+(2, 5, 1),
+(3, 8, 2),
+(4, 10, 1),
+(5, 12, 1),
+(6, 14, 1),
+(7, 16, 1),
+(8, 18, 1),
+(9, 17, 1),
+(10, 19, 2),
+(11, 14, 2),
+(12, 20, 1),
+(13, 4, 1),
+(14, 7, 1),
+(15, 7, 1),
+(16, 19, 2),
+(17, 18, 1),
+(18, 2, 1),
+(19, 13, 2),
+(20, 5, 3);
+
+INSERT INTO employees (admin_id, restaurant_id, branch_id, name, email, phone, role, status) VALUES
+(1, 1, 1, 'Carlos Mesero', 'carlos.mesero@qrio.com', '+51912345700', 'MESERO', 'ACTIVO'),
+(1, 1, 1, 'Ana Cajera', 'ana.cajera@qrio.com', '+51912345701', 'CAJERO', 'ACTIVO'),
+(1, 1, 1, 'Miguel Cocina', 'miguel.cocina@qrio.com', '+51912345702', 'COCINA', 'ACTIVO'),
+(1, 1, 2, 'Luis Mesero Sucursal', 'luis.mesero2@qrio.com', '+51912345703', 'MESERO', 'ACTIVO'),
+(2, 2, 3, 'David Admin Pizzería', 'david.admin@qrio.com', '+51912345704', 'ADMIN_RESTAURANTE', 'ACTIVO'),
+(3, 3, 4, 'Elena Mesero Sushi', 'elena.mesero@qrio.com', '+51912345705', 'MESERO', 'ACTIVO'),
+(4, 4, 5, 'Roberto Parrillero', 'roberto.parrillero@qrio.com', '+51912345706', 'COCINA', 'ACTIVO'),
+(5, 5, 6, 'Sofia Barista', 'sofia.barista@qrio.com', '+51912345707', 'MESERO', 'ACTIVO');
+
+INSERT INTO employee_permissions (employee_id, restaurant_id, branch_id, permission) VALUES
+(1, 1, 1, 'VER_ORDENES'),
+(1, 1, 1, 'CREAR_ORDENES'),
+(2, 1, 1, 'PROCESAR_PAGOS'),
+(2, 1, 1, 'VER_REPORTES'),
+(3, 1, 1, 'VER_ORDENES'),
+(3, 1, 1, 'MARCAR_COMPLETADO'),
+(4, 1, 2, 'VER_ORDENES'),
+(5, 2, 3, 'VER_TODAS_ORDENES'),
+(5, 2, 3, 'EDITAR_MENU'),
+(6, 3, 4, 'VER_ORDENES'),
+(7, 4, 5, 'VER_ORDENES'),
+(8, 5, 6, 'VER_ORDENES');
 
 INSERT INTO orders (table_id, customer_id, status, total, people) VALUES
 (1, 1, 'COMPLETADO', 95.50, 2),
@@ -222,21 +276,21 @@ INSERT INTO orders (table_id, customer_id, status, total, people) VALUES
 (4, 19, 'EN_PROGRESO', 135.00, 4),
 (5, 20, 'COMPLETADO', 102.00, 3);
 
-INSERT INTO order_items (order_id, dish_id, quantity, unit_price, subtotal) VALUES
+INSERT INTO order_items (order_id, product_id, quantity, unit_price, subtotal) VALUES
 (1, 1, 2, 18.50, 37.00),
 (1, 3, 1, 32.00, 32.00),
-(1, 9, 2, 8.00, 16.00),
+(1, 12, 2, 8.00, 16.00),
 (2, 5, 2, 35.00, 70.00),
 (2, 7, 1, 30.00, 30.00),
 (3, 10, 1, 65.00, 65.00),
 (4, 14, 1, 35.00, 35.00),
-(5, 18, 3, 32.00, 96.00),
+(5, 19, 3, 32.00, 96.00),
 (5, 11, 2, 12.00, 24.00),
 (6, 6, 2, 38.00, 76.00),
 (8, 8, 2, 22.00, 44.00),
 (8, 13, 2, 18.00, 36.00),
-(9, 17, 2, 24.00, 48.00),
-(10, 19, 2, 55.00, 110.00),
+(9, 18, 2, 24.00, 48.00),
+(10, 20, 2, 55.00, 110.00),
 (10, 12, 2, 18.00, 36.00),
 (12, 3, 3, 32.00, 96.00),
 (13, 14, 2, 35.00, 70.00),

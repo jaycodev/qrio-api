@@ -14,10 +14,11 @@ public interface OfferRepository extends CrudRepository<Offer, Long> {
     @Query("""
         SELECT 
             o.id AS id,
-            o.restaurantId AS restaurantId,
+            o.code AS code,
+            o.restaurant.id AS restaurantId,
             o.title AS title,
             o.description AS description,
-            o.offerPrice AS offerPrice,
+            o.offerDiscountPercentage AS offerDiscountPercentage,
             o.active AS active
         FROM Offer o
         ORDER BY o.id DESC
@@ -27,11 +28,14 @@ public interface OfferRepository extends CrudRepository<Offer, Long> {
     @Query("""
         SELECT 
             o.id AS id,
-            o.restaurantId AS restaurantId,
+            o.code AS code,
+            o.restaurant.id AS restaurantId,
             o.title AS title,
             o.description AS description,
-            o.offerPrice AS offerPrice,
-            o.active AS active
+            o.offerDiscountPercentage AS offerDiscountPercentage,
+            o.active AS active,
+            
+            NULL AS products
         FROM Offer o
         WHERE o.id = :id
     """)
