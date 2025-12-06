@@ -1,15 +1,12 @@
-package com.qrio.restaurantActivation.model;
+package com.qrio.user.model;
 
 import java.time.LocalDateTime;
 
-import com.qrio.user.model.User;
+import com.qrio.branch.model.Branch;
 import com.qrio.restaurant.model.Restaurant;
-import com.qrio.restaurantActivation.model.type.ActivationStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,32 +19,30 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "restaurant_activation_requests")
+@Table(name = "employee_permissions")
 @Data
 @NoArgsConstructor
-public class RestaurantActivationRequest {
+public class EmployeePermission {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "restaurant_id", nullable = false)
     private Restaurant restaurant;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
-    @Enumerated(EnumType.STRING)
-    @Column(length = 20)
-    private ActivationStatus status = ActivationStatus.PENDIENTE;
-
-    @Column(columnDefinition = "TEXT")
-    private String comment;
+    @Column(nullable = false, length = 100)
+    private String permission;
 
     private LocalDateTime createdAt;
-
-    private LocalDateTime reviewedAt;
 
     @PrePersist
     void onCreate() {

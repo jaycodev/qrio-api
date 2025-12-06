@@ -1,8 +1,5 @@
 package com.qrio.appAdmin.dto.request;
 
-import com.qrio.appAdmin.model.type.AppAdminRole;
-import com.qrio.shared.validation.ValidEnum;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,7 +14,7 @@ public record UpdateAppAdminRequest(
     @Size(max = 150, message = "Email must not exceed 150 characters")
     String email,
 
-    @NotBlank(message = "Role is required")
-    @ValidEnum(enumClass = AppAdminRole.class, message = "Invalid role")
-    String role
+    @NotBlank(message = "Password is required")
+    @Size(min = 6, message = "Password must be at least 6 characters")
+    String password
 ) {}

@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public record RestaurantDetailResponse(
     Long id,
     String code,
-    Long adminId,
+    Long userId,
     String name,
     String description,
     String logoUrl,

@@ -7,7 +7,7 @@ import com.qrio.restaurantActivation.model.type.ActivationStatus;
 public record RestaurantActivationListResponse(
     Long id,
     Long restaurantId,
-    Long adminId,
+    Long userId,
     ActivationStatus status,
     String comment,
     LocalDateTime createdAt,

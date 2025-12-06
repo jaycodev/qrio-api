@@ -16,7 +16,6 @@ public interface AppAdminRepository extends CrudRepository<AppAdmin, Long> {
             a.id AS id,
             a.name AS name,
             a.email AS email,
-            a.role AS role,
             a.createdAt AS createdAt
         FROM AppAdmin a
         ORDER BY a.id DESC
@@ -28,7 +27,6 @@ public interface AppAdminRepository extends CrudRepository<AppAdmin, Long> {
             a.id AS id,
             a.name AS name,
             a.email AS email,
-            a.role AS role,
             a.createdAt AS createdAt
         FROM AppAdmin a
         WHERE a.id = :id

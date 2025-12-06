@@ -15,7 +15,7 @@ public interface RestaurantActivationRepository extends CrudRepository<Restauran
         SELECT 
             r.id AS id,
             r.restaurant.id AS restaurantId,
-            r.admin.id AS adminId,
+            r.user.id AS userId,
             r.status AS status,
             r.comment AS comment,
             r.createdAt AS createdAt,
@@ -30,7 +30,7 @@ public interface RestaurantActivationRepository extends CrudRepository<Restauran
         SELECT 
             r.id AS id,
             r.restaurant.id AS restaurantId,
-            r.admin.id AS adminId,
+            r.user.id AS userId,
             r.status AS status,
             r.comment AS comment,
             r.createdAt AS createdAt,

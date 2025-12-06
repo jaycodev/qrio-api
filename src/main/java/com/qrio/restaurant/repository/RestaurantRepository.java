@@ -16,7 +16,7 @@ public interface RestaurantRepository extends CrudRepository<Restaurant, Long> {
         SELECT 
             r.id AS id,
             r.code AS code,
-            r.admin.id AS adminId,
+            r.user.id AS userId,
             r.name AS name,
             r.logoUrl AS logoUrl,
             r.isActive AS isActive
@@ -29,7 +29,7 @@ public interface RestaurantRepository extends CrudRepository<Restaurant, Long> {
         SELECT 
             r.id AS id,
             r.code AS code,
-            r.admin.id AS adminId,
+            r.user.id AS userId,
             r.name AS name,
             r.description AS description,
             r.logoUrl AS logoUrl,
