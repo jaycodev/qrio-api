@@ -1,6 +1,6 @@
 package com.qrio.restaurant.model;
 
-import com.qrio.admin.model.Admin;
+import com.qrio.user.model.User;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -21,8 +21,8 @@ public class Restaurant {
     private String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
-    private Admin admin;
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
     @Column(nullable = false, length = 150)
     private String name;

@@ -10,7 +10,7 @@ public record CreateRestaurantActivationRequest(
     Long restaurantId,
 
     @NotNull(message = "Admin ID is required")
-    Long adminId,
+    Long userId,
 
     @ValidEnum(enumClass = ActivationStatus.class, message = "Invalid status")
     String status,

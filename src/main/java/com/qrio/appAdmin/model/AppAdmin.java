@@ -2,7 +2,7 @@ package com.qrio.appAdmin.model;
 
 import java.time.LocalDateTime;
 
-import com.qrio.appAdmin.model.type.AppAdminRole;
+import com.qrio.shared.type.Status;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,9 +31,12 @@ public class AppAdmin {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
+    @Column(nullable = false, length = 255)
+    private String password;
+
     @Enumerated(EnumType.STRING)
-    @Column(length = 50)
-    private AppAdminRole role = AppAdminRole.ADMIN_SUPER;
+    @Column(length = 10)
+    private Status status = Status.ACTIVO;
 
     private LocalDateTime createdAt;
 

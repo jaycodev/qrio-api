@@ -1,7 +1,7 @@
 package com.qrio.restaurant.service;
 
-import com.qrio.admin.model.Admin;
-import com.qrio.admin.repository.AdminRepository;
+import com.qrio.user.model.User;
+import com.qrio.user.repository.UserRepository;
 import com.qrio.restaurant.dto.request.CreateRestaurantRequest;
 import com.qrio.restaurant.dto.request.UpdateRestaurantRequest;
 import com.qrio.restaurant.dto.response.RestaurantDetailResponse;
@@ -25,7 +25,7 @@ import java.util.List;
 @Validated
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
-    private final AdminRepository adminRepository;
+    private final UserRepository userRepository;
 
     public List<RestaurantListResponse> getList() {
         return restaurantRepository.findList();
@@ -38,11 +38,11 @@ public class RestaurantService {
 
     @Transactional
     public RestaurantListResponse create(CreateRestaurantRequest request) {
-        Admin admin = adminRepository.findById(request.adminId())
+        User user = userRepository.findById(request.adminId())
                 .orElseThrow(() -> new ResourceNotFoundException("Admin not found"));
 
         Restaurant restaurant = new Restaurant();
-        restaurant.setAdmin(admin);
+        restaurant.setUser(user);
         restaurant.setName(request.name());
         restaurant.setDescription(request.description());
         restaurant.setLogoUrl(request.logoUrl());
@@ -58,10 +58,10 @@ public class RestaurantService {
         Restaurant restaurant = restaurantRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with ID: " + id));
 
-        Admin admin = adminRepository.findById(request.adminId())
+        User user = userRepository.findById(request.adminId())
                 .orElseThrow(() -> new ResourceNotFoundException("Admin not found"));
 
-        restaurant.setAdmin(admin);
+        restaurant.setUser(user);
         restaurant.setName(request.name());
         restaurant.setDescription(request.description());
         restaurant.setLogoUrl(request.logoUrl());
@@ -75,7 +75,7 @@ public class RestaurantService {
         return new RestaurantListResponse(
                 restaurant.getId(),
                 restaurant.getCode(),
-                restaurant.getAdmin().getId(),
+                restaurant.getUser().getId(),
                 restaurant.getName(),
                 restaurant.getLogoUrl(),
                 restaurant.getIsActive());

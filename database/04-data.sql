@@ -2,31 +2,39 @@ SET search_path TO public;
 
 BEGIN;
 
-INSERT INTO app_admins (name, email, role) VALUES
-('Admin Super Usuario', 'admin.super@qrio.com', 'ADMIN_SUPER'),
-('Soporte Técnico', 'soporte@qrio.com', 'SOPORTE');
+INSERT INTO users (email, password, name, phone, role, restaurant_id, status) VALUES
+('juan.perez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Juan Pérez', '+51987654321', 'DUEÑO', NULL, 'ACTIVO'),
+('maria.garcia@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'María García', '+51987654322', 'DUEÑO', NULL, 'ACTIVO'),
+('carlos.lopez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Carlos López', '+51987654323', 'DUEÑO', NULL, 'ACTIVO'),
+('ana.martinez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Ana Martínez', '+51987654324', 'DUEÑO', NULL, 'ACTIVO'),
+('luis.rodriguez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Luis Rodríguez', '+51987654325', 'DUEÑO', NULL, 'ACTIVO'),
+('carmen.sanchez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Carmen Sánchez', '+51987654326', 'DUEÑO', NULL, 'ACTIVO'),
+('pedro.ramirez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Pedro Ramírez', '+51987654327', 'DUEÑO', NULL, 'INACTIVO'),
+('laura.torres@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Laura Torres', '+51987654328', 'DUEÑO', NULL, 'ACTIVO'),
+('jorge.flores@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Jorge Flores', '+51987654329', 'DUEÑO', NULL, 'ACTIVO'),
+('patricia.vargas@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Patricia Vargas', '+51987654330', 'DUEÑO', NULL, 'ACTIVO'),
+('roberto.castro@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Roberto Castro', '+51987654331', 'DUEÑO', NULL, 'ACTIVO'),
+('elena.jimenez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Elena Jiménez', '+51987654332', 'DUEÑO', NULL, 'ACTIVO'),
+('miguel.herrera@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Miguel Herrera', '+51987654333', 'DUEÑO', NULL, 'ACTIVO'),
+('isabel.morales@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Isabel Morales', '+51987654334', 'DUEÑO', NULL, 'ACTIVO'),
+('francisco.ruiz@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Francisco Ruiz', '+51987654335', 'DUEÑO', NULL, 'INACTIVO'),
+('rosa.diaz@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Rosa Díaz', '+51987654336', 'DUEÑO', NULL, 'ACTIVO'),
+('antonio.mendoza@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Antonio Mendoza', '+51987654337', 'DUEÑO', NULL, 'ACTIVO'),
+('lucia.reyes@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Lucía Reyes', '+51987654338', 'DUEÑO', NULL, 'ACTIVO'),
+('ricardo.vega@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Ricardo Vega', '+51987654339', 'DUEÑO', NULL, 'ACTIVO'),
+('sofia.campos@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Sofía Campos', '+51987654340', 'DUEÑO', NULL, 'ACTIVO');
 
-INSERT INTO admins (name, email, phone, status) VALUES
-('Juan Pérez', 'juan.perez@email.com', '+51987654321', 'ACTIVO'),
-('María García', 'maria.garcia@email.com', '+51987654322', 'ACTIVO'),
-('Carlos López', 'carlos.lopez@email.com', '+51987654323', 'ACTIVO'),
-('Ana Martínez', 'ana.martinez@email.com', '+51987654324', 'ACTIVO'),
-('Luis Rodríguez', 'luis.rodriguez@email.com', '+51987654325', 'ACTIVO'),
-('Carmen Sánchez', 'carmen.sanchez@email.com', '+51987654326', 'ACTIVO'),
-('Pedro Ramírez', 'pedro.ramirez@email.com', '+51987654327', 'INACTIVO'),
-('Laura Torres', 'laura.torres@email.com', '+51987654328', 'ACTIVO'),
-('Jorge Flores', 'jorge.flores@email.com', '+51987654329', 'ACTIVO'),
-('Patricia Vargas', 'patricia.vargas@email.com', '+51987654330', 'ACTIVO'),
-('Roberto Castro', 'roberto.castro@email.com', '+51987654331', 'ACTIVO'),
-('Elena Jiménez', 'elena.jimenez@email.com', '+51987654332', 'ACTIVO'),
-('Miguel Herrera', 'miguel.herrera@email.com', '+51987654333', 'ACTIVO'),
-('Isabel Morales', 'isabel.morales@email.com', '+51987654334', 'ACTIVO'),
-('Francisco Ruiz', 'francisco.ruiz@email.com', '+51987654335', 'INACTIVO'),
-('Rosa Díaz', 'rosa.diaz@email.com', '+51987654336', 'ACTIVO'),
-('Antonio Mendoza', 'antonio.mendoza@email.com', '+51987654337', 'ACTIVO'),
-('Lucía Reyes', 'lucia.reyes@email.com', '+51987654338', 'ACTIVO'),
-('Ricardo Vega', 'ricardo.vega@email.com', '+51987654339', 'ACTIVO'),
-('Sofía Campos', 'sofia.campos@email.com', '+51987654340', 'ACTIVO');
+INSERT INTO users (email, password, name, phone, role, restaurant_id, branch_id, status) VALUES
+('miguel.cocina@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Miguel Cocina', '+51912345702', 'COCINA', 1, 1, 'ACTIVO'),
+('roberto.parrillero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Roberto Parrillero', '+51912345706', 'COCINA', 4, 5, 'ACTIVO');
+
+INSERT INTO users (email, password, name, phone, role, restaurant_id, branch_id, status) VALUES
+('carlos.mesero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Carlos Mesero', '+51912345700', 'EMPLEADO', 1, 1, 'ACTIVO'),
+('ana.cajera@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Ana Cajera', '+51912345701', 'EMPLEADO', 1, 1, 'ACTIVO'),
+('luis.mesero2@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Luis Mesero Sucursal', '+51912345703', 'EMPLEADO', 1, 2, 'ACTIVO'),
+('david.admin@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'David Admin Pizzería', '+51912345704', 'EMPLEADO', 2, 3, 'ACTIVO'),
+('elena.mesero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Elena Mesero Sushi', '+51912345705', 'EMPLEADO', 3, 4, 'ACTIVO'),
+('sofia.barista@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Sofia Barista', '+51912345707', 'EMPLEADO', 5, 6, 'ACTIVO');
 
 INSERT INTO customers (firebase_uid, name, email, phone, status) VALUES
 ('customer_001', 'Alberto Suárez', 'alberto.suarez@email.com', '+51912345601', 'ACTIVO'),
@@ -72,7 +80,7 @@ INSERT INTO payment_methods (customer_id, type, payment_token, last4, brand) VAL
 (19, 'YAPE', 'yape_912345619', NULL, NULL),
 (20, 'TARJETA', 'tok_amex_340012345678901', '8901', 'Amex');
 
-INSERT INTO restaurants (admin_id, name, description, logo_url, is_active) VALUES
+INSERT INTO restaurants (user_id, name, description, logo_url, is_active) VALUES
 (1, 'El Sabor Peruano', 'Comida criolla tradicional', 'https://example.com/logos/sabor_peruano.png', TRUE),
 (2, 'Pizzería Bella Napoli', 'Auténtica pizza italiana', 'https://example.com/logos/bella_napoli.png', TRUE),
 (3, 'Sushi Bar Tokio', 'Sushi y comida japonesa', 'https://example.com/logos/sushi_tokio.png', TRUE),
@@ -94,7 +102,7 @@ INSERT INTO restaurants (admin_id, name, description, logo_url, is_active) VALUE
 (19, 'Anticuchería La Esquina', 'Anticuchos y parrillas', 'https://example.com/logos/anticucheria.png', TRUE),
 (20, 'Heladería Artesanal', 'Helados naturales', 'https://example.com/logos/heladeria.png', TRUE);
 
-INSERT INTO restaurant_activation_requests (restaurant_id, admin_id, status, comment) VALUES
+INSERT INTO restaurant_activation_requests (restaurant_id, user_id, status, comment) VALUES
 (7, 2, 'PENDIENTE', 'Esperando revisión de documentos'),
 (14, 4, 'PENDIENTE', 'Solicitud en proceso de evaluación');
 
@@ -230,29 +238,19 @@ INSERT INTO offer_products (offer_id, product_id, quantity) VALUES
 (19, 13, 2),
 (20, 5, 3);
 
-INSERT INTO employees (admin_id, restaurant_id, branch_id, name, email, phone, role, status) VALUES
-(1, 1, 1, 'Carlos Mesero', 'carlos.mesero@qrio.com', '+51912345700', 'MESERO', 'ACTIVO'),
-(1, 1, 1, 'Ana Cajera', 'ana.cajera@qrio.com', '+51912345701', 'CAJERO', 'ACTIVO'),
-(1, 1, 1, 'Miguel Cocina', 'miguel.cocina@qrio.com', '+51912345702', 'COCINA', 'ACTIVO'),
-(1, 1, 2, 'Luis Mesero Sucursal', 'luis.mesero2@qrio.com', '+51912345703', 'MESERO', 'ACTIVO'),
-(2, 2, 3, 'David Admin Pizzería', 'david.admin@qrio.com', '+51912345704', 'ADMIN_RESTAURANTE', 'ACTIVO'),
-(3, 3, 4, 'Elena Mesero Sushi', 'elena.mesero@qrio.com', '+51912345705', 'MESERO', 'ACTIVO'),
-(4, 4, 5, 'Roberto Parrillero', 'roberto.parrillero@qrio.com', '+51912345706', 'COCINA', 'ACTIVO'),
-(5, 5, 6, 'Sofia Barista', 'sofia.barista@qrio.com', '+51912345707', 'MESERO', 'ACTIVO');
-
-INSERT INTO employee_permissions (employee_id, restaurant_id, branch_id, permission) VALUES
-(1, 1, 1, 'VER_ORDENES'),
-(1, 1, 1, 'CREAR_ORDENES'),
-(2, 1, 1, 'PROCESAR_PAGOS'),
-(2, 1, 1, 'VER_REPORTES'),
-(3, 1, 1, 'VER_ORDENES'),
-(3, 1, 1, 'MARCAR_COMPLETADO'),
-(4, 1, 2, 'VER_ORDENES'),
-(5, 2, 3, 'VER_TODAS_ORDENES'),
-(5, 2, 3, 'EDITAR_MENU'),
-(6, 3, 4, 'VER_ORDENES'),
-(7, 4, 5, 'VER_ORDENES'),
-(8, 5, 6, 'VER_ORDENES');
+INSERT INTO employee_permissions (user_id, restaurant_id, branch_id, permission) VALUES
+(23, 1, 1, 'VER_ORDENES'),
+(23, 1, 1, 'CREAR_ORDENES'),
+(24, 1, 1, 'PROCESAR_PAGOS'),
+(24, 1, 1, 'VER_REPORTES'),
+(21, 1, 1, 'VER_ORDENES'),
+(21, 1, 1, 'MARCAR_COMPLETADO'),
+(25, 1, 2, 'VER_ORDENES'),
+(26, 2, 3, 'VER_TODAS_ORDENES'),
+(26, 2, 3, 'EDITAR_MENU'),
+(27, 3, 4, 'VER_ORDENES'),
+(22, 4, 5, 'VER_ORDENES'),
+(28, 5, 6, 'VER_ORDENES');
 
 INSERT INTO orders (table_id, customer_id, status, total, people) VALUES
 (1, 1, 'COMPLETADO', 95.50, 2),

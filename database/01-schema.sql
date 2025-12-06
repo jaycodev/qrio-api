@@ -2,12 +2,17 @@ SET search_path TO public;
 
 BEGIN;
 
-CREATE TABLE admins (
+CREATE TABLE users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
     email VARCHAR(150) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    name VARCHAR(150) NOT NULL,
     phone VARCHAR(20),
-    status VARCHAR(10) DEFAULT 'ACTIVO' CHECK (status IN ('ACTIVO', 'INACTIVO'))
+    role VARCHAR(50) NOT NULL CHECK (role IN ('DUEÑO', 'COCINA', 'EMPLEADO')),
+    restaurant_id BIGINT,
+    branch_id BIGINT,
+    status VARCHAR(10) DEFAULT 'ACTIVO' CHECK (status IN ('ACTIVO', 'INACTIVO')),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE customers (
@@ -35,25 +40,25 @@ CREATE TABLE payment_methods (
 CREATE TABLE restaurants (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     code VARCHAR(50) UNIQUE,
-    admin_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT,
     logo_url TEXT,
     is_active BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admins (id)
+    FOREIGN KEY (user_id) REFERENCES users (id)
 );
 
 CREATE TABLE restaurant_activation_requests (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     restaurant_id BIGINT NOT NULL,
-    admin_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
     status VARCHAR(20) DEFAULT 'PENDIENTE' CHECK (status IN ('PENDIENTE', 'APROBADO', 'RECHAZADO')),
     comment TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     reviewed_at TIMESTAMP,
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
-    FOREIGN KEY (admin_id) REFERENCES admins(id)
+    FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
 CREATE TABLE branches (
@@ -147,30 +152,14 @@ CREATE TABLE order_items (
     FOREIGN KEY (product_id) REFERENCES products (id)
 );
 
-CREATE TABLE employees (
-    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    admin_id BIGINT NOT NULL,
-    restaurant_id BIGINT NOT NULL,
-    branch_id BIGINT,
-    name VARCHAR(150) NOT NULL,
-    email VARCHAR(150) UNIQUE,
-    phone VARCHAR(20),
-    role VARCHAR(50) NOT NULL CHECK (role IN ('MESERO', 'CAJERO', 'COCINA', 'ADMIN_RESTAURANTE')),
-    status VARCHAR(10) DEFAULT 'ACTIVO' CHECK (status IN ('ACTIVO', 'INACTIVO')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (admin_id) REFERENCES admins (id),
-    FOREIGN KEY (restaurant_id) REFERENCES restaurants (id),
-    FOREIGN KEY (branch_id) REFERENCES branches (id)
-);
-
 CREATE TABLE employee_permissions (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
-    employee_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
     restaurant_id BIGINT NOT NULL,
     branch_id BIGINT,
     permission VARCHAR(100) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (employee_id) REFERENCES employees(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (restaurant_id) REFERENCES restaurants(id),
     FOREIGN KEY (branch_id) REFERENCES branches(id)
 );
@@ -179,7 +168,8 @@ CREATE TABLE app_admins (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     email VARCHAR(150) UNIQUE NOT NULL,
-    role VARCHAR(50) DEFAULT 'ADMIN_SUPER' CHECK (role IN ('ADMIN_SUPER', 'SOPORTE')),
+    password VARCHAR(255) NOT NULL,
+    status VARCHAR(10) DEFAULT 'ACTIVO' CHECK (status IN ('ACTIVO', 'INACTIVO')),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

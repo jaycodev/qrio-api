@@ -7,8 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
-import com.qrio.admin.model.Admin;
-import com.qrio.admin.repository.AdminRepository;
+import com.qrio.user.model.User;
+import com.qrio.user.repository.UserRepository;
 import com.qrio.restaurant.model.Restaurant;
 import com.qrio.restaurant.repository.RestaurantRepository;
 import com.qrio.restaurantActivation.dto.request.CreateRestaurantActivationRequest;
@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class RestaurantActivationService {
     private final RestaurantActivationRepository restaurantActivationRepository;
     private final RestaurantRepository restaurantRepository;
-    private final AdminRepository adminRepository;
+    private final UserRepository userRepository;
 
     public List<RestaurantActivationListResponse> getList(Long restaurantId) {
         return restaurantActivationRepository.findList(restaurantId);
@@ -45,12 +45,12 @@ public class RestaurantActivationService {
     public RestaurantActivationListResponse create(CreateRestaurantActivationRequest request) {
         Restaurant restaurant = restaurantRepository.findById(request.restaurantId())
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found"));
-        Admin admin = adminRepository.findById(request.adminId())
+        User user = userRepository.findById(request.userId())
                 .orElseThrow(() -> new ResourceNotFoundException("Admin not found"));
 
         RestaurantActivationRequest activation = new RestaurantActivationRequest();
         activation.setRestaurant(restaurant);
-        activation.setAdmin(admin);
+        activation.setUser(user);
         activation.setStatus(
                 request.status() != null ? ActivationStatus.valueOf(request.status()) : ActivationStatus.PENDIENTE);
         activation.setComment(request.comment());
@@ -77,7 +77,7 @@ public class RestaurantActivationService {
         return new RestaurantActivationListResponse(
                 activation.getId(),
                 activation.getRestaurant().getId(),
-                activation.getAdmin().getId(),
+                activation.getUser().getId(),
                 activation.getStatus(),
                 activation.getComment(),
                 activation.getCreatedAt(),

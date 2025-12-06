@@ -11,7 +11,6 @@ import com.qrio.appAdmin.dto.request.UpdateAppAdminRequest;
 import com.qrio.appAdmin.dto.response.AppAdminDetailResponse;
 import com.qrio.appAdmin.dto.response.AppAdminListResponse;
 import com.qrio.appAdmin.model.AppAdmin;
-import com.qrio.appAdmin.model.type.AppAdminRole;
 import com.qrio.appAdmin.repository.AppAdminRepository;
 import com.qrio.shared.exception.ResourceNotFoundException;
 
@@ -38,7 +37,7 @@ public class AppAdminService {
         AppAdmin appAdmin = new AppAdmin();
         appAdmin.setName(request.name());
         appAdmin.setEmail(request.email());
-        appAdmin.setRole(request.role() != null ? AppAdminRole.valueOf(request.role()) : AppAdminRole.ADMIN_SUPER);
+        appAdmin.setPassword(request.password());
 
         AppAdmin saved = appAdminRepository.save(appAdmin);
         return toListResponse(saved);
@@ -51,7 +50,7 @@ public class AppAdminService {
 
         appAdmin.setName(request.name());
         appAdmin.setEmail(request.email());
-        appAdmin.setRole(AppAdminRole.valueOf(request.role()));
+        appAdmin.setPassword(request.password());
 
         AppAdmin updated = appAdminRepository.save(appAdmin);
         return toListResponse(updated);
@@ -62,7 +61,6 @@ public class AppAdminService {
                 appAdmin.getId(),
                 appAdmin.getName(),
                 appAdmin.getEmail(),
-                appAdmin.getRole(),
                 appAdmin.getCreatedAt());
     }
 }
