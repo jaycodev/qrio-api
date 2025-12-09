@@ -2,6 +2,7 @@ package com.qrio.user.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -33,6 +34,7 @@ public class EmployeeService {
     private final EmployeePermissionRepository employeePermissionRepository;
     private final RestaurantRepository restaurantRepository;
     private final BranchRepository branchRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public List<EmployeeListResponse> getList(Long branchId) {
         return userRepository.findListEmployee(branchId);
@@ -64,7 +66,7 @@ public class EmployeeService {
 
         User user = new User();
         user.setEmail(request.email());
-        user.setPassword(request.password());
+        user.setPassword(passwordEncoder.encode(request.password()));
         user.setName(request.name());
         user.setPhone(request.phone());
         user.setRole(UserRole.valueOf(request.role()));
