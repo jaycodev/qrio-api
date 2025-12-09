@@ -41,11 +41,6 @@ const me = await api.get('/auth/me');
 ## Pruebas rápidas en local (PowerShell)
 ```powershell
 # Arrancar la app
-$env:SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/qrio"
-$env:SPRING_DATASOURCE_USERNAME="postgres"
-$env:SPRING_DATASOURCE_PASSWORD="1234"
-$env:SECURITY_JWT_SECRET="M1Wbq3dXyZl9h2GfT8o3qNw7ZrKp1eQvU4s8b0c6x2y5v9t3p7r1u0a6d4f8j2l5"
-$env:SECURITY_JWT_EXPMS="3600000"
 ./mvnw.cmd spring-boot:run
 
 # Login y guardar cookies
