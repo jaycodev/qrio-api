@@ -1,5 +1,6 @@
 package com.qrio.user.service;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class OwnerService {
     private final UserRepository userRepository;
     private final RestaurantRepository restaurantRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public OwnerListResponse create(CreateOwnerRequest request) {
@@ -36,7 +38,7 @@ public class OwnerService {
 
         User owner = new User();
         owner.setEmail(request.email());
-        owner.setPassword(request.password());
+        owner.setPassword(passwordEncoder.encode(request.password()));
         owner.setName(request.name());
         owner.setPhone(request.phone());
         owner.setRole(UserRole.DUEÑO);

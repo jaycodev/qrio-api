@@ -24,6 +24,10 @@ INSERT INTO users (email, password, name, phone, role, restaurant_id, status) VA
 ('ricardo.vega@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Ricardo Vega', '+51987654339', 'DUEÑO', NULL, 'ACTIVO'),
 ('sofia.campos@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Sofía Campos', '+51987654340', 'DUEÑO', NULL, 'ACTIVO');
 
+-- Usuario de prueba con contraseña conocida (Qrio1234!)
+INSERT INTO users (email, password, name, phone, role, restaurant_id, status) VALUES
+('tester@qrio.com', '$2a$10$pASwuNgbTPBERwTUoE8YtOwdTebgXf2F.RRoDSolpWyYFsf7c3bHS', 'Usuario Prueba', '+51000000000', 'DUEÑO', NULL, 'ACTIVO');
+
 INSERT INTO users (email, password, name, phone, role, restaurant_id, branch_id, status) VALUES
 ('miguel.cocina@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Miguel Cocina', '+51912345702', 'COCINA', 1, 1, 'ACTIVO'),
 ('roberto.parrillero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Roberto Parrillero', '+51912345706', 'COCINA', 4, 5, 'ACTIVO');
