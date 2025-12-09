@@ -94,5 +94,4 @@ public class UserController {
         OwnerListResponse response = ownerService.update(id, request);
         return ResponseEntity.ok(new ApiSuccess<>("Owner updated successfully", response));
     }
-
 }
