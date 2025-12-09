@@ -30,15 +30,17 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, UserDetailsService uds) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, UserDetailsService uds)
+            throws Exception {
         http.csrf(csrf -> csrf.disable())
-            .cors(cors -> {})
-            .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/refresh", "/v3/api-docs/**", "/swagger-ui/**").permitAll()
-                .anyRequest().authenticated()
-            )
-            .addFilterBefore(new JwtAuthFilter(jwtService, uds), UsernamePasswordAuthenticationFilter.class);
+                .cors(cors -> {
+                })
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/", "/auth/login", "/auth/refresh")
+                        .permitAll()
+                        .anyRequest().authenticated())
+                .addFilterBefore(new JwtAuthFilter(jwtService, uds), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
@@ -56,13 +58,14 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource(org.springframework.core.env.Environment env) {
         CorsConfiguration config = new CorsConfiguration();
         // Leer orígenes permitidos de propiedades o usar defaults locales
-        String originsProp = env.getProperty("security.cors.allowed-origins", "http://localhost:3000,http://localhost:4200");
+        String originsProp = env.getProperty("security.cors.allowed-origins",
+                "http://localhost:3000,http://localhost:4200");
         config.setAllowedOrigins(List.of(originsProp.split(",")));
-        config.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
-        config.setAllowedHeaders(List.of("Authorization","Content-Type","X-Requested-With"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setAllowCredentials(true);
         // Exponer headers útiles
-        config.setExposedHeaders(List.of("Authorization","Set-Cookie"));
+        config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
