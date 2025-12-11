@@ -35,14 +35,35 @@ public class OfferService {
     private final ProductRepository productRepository;
 
     public List<OfferListResponse> getList() {
-        return offerRepository.findList();
+        List<OfferListResponse> offers = offerRepository.findList();
+        return offers.stream()
+            .map(o -> new OfferListResponse(
+                o.id(),
+                o.code() != null ? o.code() : String.format("OF-%04d", o.id()),
+                o.restaurantId(),
+                o.title(),
+                o.description(),
+                o.offerDiscountPercentage(),
+                o.active()
+            ))
+            .toList();
     }
 
     public OfferDetailResponse getDetailById(Long id) {
         OfferDetailResponse base = offerRepository.findDetailById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));
-
-        return base.withProducts(offerProductRepository.findOfferProductsByOfferId(id));
+        String code = base.code() != null ? base.code() : String.format("OF-%04d", base.id());
+        OfferDetailResponse normalized = new OfferDetailResponse(
+            base.id(),
+            code,
+            base.restaurantId(),
+            base.title(),
+            base.description(),
+            base.offerDiscountPercentage(),
+            base.active(),
+            null
+        );
+        return normalized.withProducts(offerProductRepository.findOfferProductsByOfferId(id));
     }
 
     @Transactional
@@ -112,5 +133,13 @@ public class OfferService {
                 offer.getDescription(),
                 offer.getOfferDiscountPercentage(),
                 offer.getActive());
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));
+        offerProductRepository.deleteAllByOffer(offer);
+        offerRepository.delete(offer);
     }
 }

@@ -87,4 +87,12 @@ public class OrderController {
         OrderListResponse result = orderService.update(id, request);
         return ResponseEntity.ok(new ApiSuccess<>("Order updated successfully", result));
     }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    @io.swagger.v3.oas.annotations.Operation(summary = "Delete an order by ID")
+    public ResponseEntity<ApiSuccess<Boolean>> delete(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
+        orderService.delete(id);
+        return ResponseEntity.ok(new ApiSuccess<>("Order deleted successfully", true));
+    }
 }
