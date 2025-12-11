@@ -44,14 +44,10 @@ public class SecurityConfig {
                         "/",
                         "/auth/login",
                         "/auth/refresh",
-                        "/v3/api-docs/**",
-                        "/swagger-ui/**",
-                        "/static/**",
-                        "/docs.html"
+                        "/v3/api-docs/**"
                 ).permitAll();
 
                         if (isLocal) {
-                            // Permitir endpoints necesarios para el front en desarrollo sin login
                             auth.requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/categories", "/categories/**").permitAll();
                             auth.requestMatchers(HttpMethod.GET, "/tables", "/tables/**").permitAll();
