@@ -70,4 +70,12 @@ public class OfferController {
         OfferListResponse result = offerService.update(id, request);
         return ResponseEntity.ok(new ApiSuccess<>("Offer updated successfully", result));
     }
+
+    @io.swagger.v3.oas.annotations.Operation(summary = "Delete an offer by ID")
+    @org.springframework.web.bind.annotation.DeleteMapping("/{id}")
+    public ResponseEntity<ApiSuccess<Boolean>> delete(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
+        offerService.delete(id);
+        return ResponseEntity.ok(new ApiSuccess<>("Offer deleted successfully", true));
+    }
 }

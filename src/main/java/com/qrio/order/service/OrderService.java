@@ -42,7 +42,22 @@ public class OrderService {
     private final ProductRepository productRepository;
 
     public List<OrderListResponse> getList(Long branchId) {
-        return orderRepository.findList(branchId);
+        List<OrderListResponse> list = orderRepository.findList(branchId);
+        return list.stream()
+                .map(o -> new OrderListResponse(
+                        o.id(),
+                        o.code() != null ? o.code() : String.format("OR-%04d", o.id()),
+                        o.getTable().id(),
+                        o.getTable().number(),
+                        o.getCustomer().id(),
+                        o.getCustomer().code() != null ? o.getCustomer().code() : String.format("CU-%04d", o.getCustomer().id()),
+                        o.getCustomer().name(),
+                        o.status(),
+                        o.total(),
+                        o.people(),
+                        o.itemCount()
+                ))
+                .toList();
     }
 
     public OrderFilterOptionsResponse getFilterOptions(Long branchId) {
@@ -137,15 +152,19 @@ public class OrderService {
     }
 
     public OrderListResponse toListResponse(Order order) {
+        String code = order.getCode() != null ? order.getCode() : String.format("OR-%04d", order.getId());
+        String customerCode = order.getCustomer().getCode() != null
+                ? order.getCustomer().getCode()
+                : String.format("CU-%04d", order.getCustomer().getId());
         return new OrderListResponse(
                 order.getId(),
-                order.getCode(),
+                code,
 
                 order.getDiningTable().getId(),
                 order.getDiningTable().getTableNumber(),
 
                 order.getCustomer().getId(),
-                order.getCustomer().getCode(),
+                customerCode,
                 order.getCustomer().getName(),
 
                 order.getStatus(),
@@ -154,4 +173,12 @@ public class OrderService {
 
                 (long) order.getOrderItems().size());
     }
+
+        @Transactional
+        public void delete(Long id) {
+                Order order = orderRepository.findById(id)
+                                .orElseThrow(() -> new ResourceNotFoundException("Order not found with ID: " + id));
+                orderItemRepository.deleteAllByOrder(order);
+                orderRepository.delete(order);
+        }
 }

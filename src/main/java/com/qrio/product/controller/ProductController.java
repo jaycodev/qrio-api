@@ -66,4 +66,12 @@ public class ProductController {
         ProductListResponse result = productService.update(id, request, branchId);
         return ResponseEntity.ok(new ApiSuccess<>("Product updated successfully", result));
     }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete a product by ID")
+    public ResponseEntity<ApiSuccess<Boolean>> delete(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
+        productService.delete(id);
+        return ResponseEntity.ok(new ApiSuccess<>("Product deleted successfully", true));
+    }
 }

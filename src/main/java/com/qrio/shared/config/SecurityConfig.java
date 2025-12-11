@@ -5,6 +5,7 @@ import com.qrio.shared.config.security.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -30,16 +31,33 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, UserDetailsService uds)
+        public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, UserDetailsService uds, org.springframework.core.env.Environment env)
             throws Exception {
+        boolean isLocal = java.util.Arrays.asList(env.getActiveProfiles()).contains("local");
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> {
                 })
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/auth/login", "/auth/refresh", "/v3/api-docs", "/v3/api-docs/**")
-                        .permitAll()
-                        .anyRequest().authenticated())
+            .authorizeHttpRequests(auth -> {
+                auth
+                    .requestMatchers(
+                        "/",
+                        "/auth/login",
+                        "/auth/refresh",
+                        "/v3/api-docs/**"
+                ).permitAll();
+
+                        if (isLocal) {
+                            auth.requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/categories", "/categories/**").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/tables", "/tables/**").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/orders", "/orders/**").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/offers", "/offers/**").permitAll();
+                            auth.requestMatchers(HttpMethod.GET, "/customers", "/customers/**").permitAll();
+                        }
+
+                auth.anyRequest().authenticated();
+            })
                 .addFilterBefore(new JwtAuthFilter(jwtService, uds), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
