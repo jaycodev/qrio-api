@@ -56,11 +56,12 @@ public class SecurityConfig {
                         String uri = request.getRequestURI();
                         boolean isFromAllowedOrigin = origin != null
                                 && origin.startsWith("https://qrio-site.vercel.app");
-                        boolean isGet = "GET".equals(method);
+                        boolean isAllowedMethod = "GET".equals(method) || "POST".equals(method) || "PUT".equals(method)
+                                || "DELETE".equals(method);
                         boolean matchesPath = matcher.match("/products/**", uri) || matcher.match("/categories/**", uri)
                                 || matcher.match("/tables/**", uri) || matcher.match("/orders/**", uri)
                                 || matcher.match("/offers/**", uri) || matcher.match("/customers/**", uri);
-                        return isLocal || (isFromAllowedOrigin && isGet && matchesPath);
+                        return isLocal || (isFromAllowedOrigin && isAllowedMethod && matchesPath);
                     }).permitAll();
 
                     auth.anyRequest().authenticated();
