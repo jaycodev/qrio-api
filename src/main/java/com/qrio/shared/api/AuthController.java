@@ -125,4 +125,32 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                 .body(new LoginResponse(newAccess));
     }
+
+        @PostMapping("/logout")
+        public ResponseEntity<?> logout() {
+        boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+        boolean secure = isProd;
+        String sameSite = isProd ? "None" : "Lax";
+
+        ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
+            .httpOnly(true)
+            .secure(secure)
+            .sameSite(sameSite)
+            .path("/")
+            .maxAge(0)
+            .build();
+
+        ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
+            .httpOnly(true)
+            .secure(secure)
+            .sameSite(sameSite)
+            .path("/auth")
+            .maxAge(0)
+            .build();
+
+        return ResponseEntity.noContent()
+            .header(HttpHeaders.SET_COOKIE, clearAccess.toString())
+            .header(HttpHeaders.SET_COOKIE, clearRefresh.toString())
+            .build();
+        }
 }
