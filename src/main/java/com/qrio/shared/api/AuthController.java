@@ -114,6 +114,8 @@ public class AuthController {
         claims.put("name", user.getName());
 
         String newAccess = jwtService.generateToken(email, claims);
+        // Rotar refresh token: emitir uno nuevo junto con el nuevo access token
+        String newRefresh = jwtService.generateToken(email, claims);
         boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
         boolean secure = isProd;
         String sameSite = isProd ? "None" : "Lax";
@@ -121,8 +123,12 @@ public class AuthController {
         ResponseCookie accessCookie = ResponseCookie.from("access_token", newAccess)
             .httpOnly(true).secure(secure).sameSite(sameSite).path("/")
             .maxAge(jwtService.getExpirationSeconds()).build();
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", newRefresh)
+            .httpOnly(true).secure(secure).sameSite(sameSite).path("/auth")
+            .maxAge(jwtService.getExpirationSeconds()).build();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(new LoginResponse(newAccess));
     }
 
