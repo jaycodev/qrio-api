@@ -28,6 +28,10 @@ INSERT INTO users (email, password, name, phone, role, restaurant_id, status) VA
 INSERT INTO users (email, password, name, phone, role, restaurant_id, status) VALUES
 ('tester@qrio.com', '$2a$10$pASwuNgbTPBERwTUoE8YtOwdTebgXf2F.RRoDSolpWyYFsf7c3bHS', 'Usuario Prueba', '+51000000000', 'DUEÑO', NULL, 'ACTIVO');
 
+-- Usuario APP_ADMIN de prueba (contraseña: Qrio1234!)
+INSERT INTO app_admins (name, email, password, status)
+VALUES ('App Admin', 'appadmin@qrio.com', '$2a$10$pASwuNgbTPBERwTUoE8YtOwdTebgXf2F.RRoDSolpWyYFsf7c3bHS', 'ACTIVO');
+
 INSERT INTO users (email, password, name, phone, role, restaurant_id, branch_id, status) VALUES
 ('miguel.cocina@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Miguel Cocina', '+51912345702', 'COCINA', 1, 1, 'ACTIVO'),
 ('roberto.parrillero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Roberto Parrillero', '+51912345706', 'COCINA', 4, 5, 'ACTIVO');
