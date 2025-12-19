@@ -22,9 +22,9 @@ public interface ProductRepository extends CrudRepository<Product, Long> {
             p.category.id AS categoryId,
             p.category.name AS categoryName,
 
-            ba.available AS available
+            COALESCE(ba.available, false) AS available
         FROM Product p
-        JOIN p.branchAvailabilities ba ON ba.branch.id = :branchId
+        LEFT JOIN p.branchAvailabilities ba WITH ba.branch.id = :branchId
         ORDER BY p.name ASC
     """)
     List<ProductListResponse> findList(Long branchId);

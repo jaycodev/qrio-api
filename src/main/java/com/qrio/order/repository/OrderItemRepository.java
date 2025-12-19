@@ -13,6 +13,8 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
     @Query("""
         SELECT 
             li.product.id AS productId,
+            li.product.name AS productName,
+            li.product.imageUrl AS productImageUrl,
             li.quantity AS quantity,
             li.unitPrice AS unitPrice,
             li.subtotal AS subtotal

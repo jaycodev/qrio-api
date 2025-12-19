@@ -2,6 +2,8 @@ package com.qrio.category.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Categories", description = "Operations related to categories")
 public class CategoryController {
     private final CategoryService categoryService;
+    private static final Logger log = LoggerFactory.getLogger(CategoryController.class);
 
     @GetMapping
     @Operation(summary = "List categories by restaurant")
@@ -52,6 +55,7 @@ public class CategoryController {
     @Operation(summary = "Create a new category")
     public ResponseEntity<ApiSuccess<CategoryListResponse>> create(
             @Valid @RequestBody CreateCategoryRequest request) {
+        log.info("[CategoryController] create called with name={}", request.name());
         CategoryListResponse created = categoryService.create(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new ApiSuccess<>("Category created successfully", created));

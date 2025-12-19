@@ -4,6 +4,7 @@ import com.qrio.shared.api.ApiSuccess;
 import com.qrio.shared.validation.ValidationMessages;
 import com.qrio.table.dto.request.CreateDiningTableRequest;
 import com.qrio.table.dto.request.UpdateDiningTableRequest;
+import com.qrio.table.dto.request.UpdateDiningTableFloorRequest;
 import com.qrio.table.dto.response.DiningTableDetailResponse;
 import com.qrio.table.dto.response.DiningTableListResponse;
 import com.qrio.table.service.DiningTableService;
@@ -61,5 +62,14 @@ public class DiningTableController {
             @Valid @RequestBody UpdateDiningTableRequest request) {
         DiningTableListResponse result = diningTableService.update(id, request);
         return ResponseEntity.ok(new ApiSuccess<>("Table updated successfully", result));
+    }
+
+    @PatchMapping("/{id}/floor")
+    @Operation(summary = "Update dining table floor by ID")
+    public ResponseEntity<ApiSuccess<DiningTableListResponse>> updateFloor(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
+            @Valid @RequestBody UpdateDiningTableFloorRequest request) {
+        DiningTableListResponse result = diningTableService.updateFloor(id, request.floor());
+        return ResponseEntity.ok(new ApiSuccess<>("Table floor updated successfully", result));
     }
 }

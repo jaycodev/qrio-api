@@ -46,4 +46,11 @@ public interface DiningTableRepository extends CrudRepository<DiningTable, Long>
         ORDER BY dt.tableNumber ASC
     """)
     List<OptionResponse> findForOptions(Long branchId);
+
+    @Query("""
+        SELECT COALESCE(MAX(dt.tableNumber), 0)
+        FROM DiningTable dt
+        WHERE dt.branch.id = :branchId
+    """)
+    Integer findMaxTableNumber(Long branchId);
 }

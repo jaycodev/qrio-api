@@ -22,6 +22,8 @@ public record OrderDetailResponse(
 
     public record OrderItem(
         Long productId,
+        String productName,
+        String productImageUrl,
         Integer quantity,
         BigDecimal unitPrice,
         BigDecimal subtotal

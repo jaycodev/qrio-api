@@ -40,6 +40,8 @@ public class SecurityConfig {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> {
                 auth
+                    // Permitir preflight CORS en todas las rutas
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers(
                         "/",
                         "/auth/login",
@@ -48,12 +50,20 @@ public class SecurityConfig {
                 ).permitAll();
 
                         if (isLocal) {
-                            auth.requestMatchers(HttpMethod.GET, "/products", "/products/**").permitAll();
-                            auth.requestMatchers(HttpMethod.GET, "/categories", "/categories/**").permitAll();
-                            auth.requestMatchers(HttpMethod.GET, "/tables", "/tables/**").permitAll();
-                            auth.requestMatchers(HttpMethod.GET, "/orders", "/orders/**").permitAll();
-                            auth.requestMatchers(HttpMethod.GET, "/offers", "/offers/**").permitAll();
-                            auth.requestMatchers(HttpMethod.GET, "/customers", "/customers/**").permitAll();
+                            // En local, permitir también métodos de escritura para endpoints seleccionados
+                            String[] openPaths = new String[]{
+                                    "/products", "/products/**",
+                                    "/categories", "/categories/**",
+                                    "/tables", "/tables/**",
+                                    "/orders", "/orders/**",
+                                    "/offers", "/offers/**",
+                                    "/customers", "/customers/**"
+                            };
+                            auth.requestMatchers(HttpMethod.GET, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.POST, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.PUT, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.PATCH, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.DELETE, openPaths).permitAll();
                         }
 
                 auth.anyRequest().authenticated();
