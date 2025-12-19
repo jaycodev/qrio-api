@@ -5,7 +5,6 @@ import com.qrio.shared.config.security.JwtService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -17,6 +16,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import org.springframework.util.AntPathMatcher;
 
 import java.util.List;
 
@@ -31,9 +32,11 @@ public class SecurityConfig {
     }
 
     @Bean
-        public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, UserDetailsService uds, org.springframework.core.env.Environment env)
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtService jwtService, UserDetailsService uds,
+            org.springframework.core.env.Environment env)
             throws Exception {
         boolean isLocal = java.util.Arrays.asList(env.getActiveProfiles()).contains("local");
+        AntPathMatcher matcher = new AntPathMatcher();
         http.csrf(csrf -> csrf.disable())
                 .cors(cors -> {
                 })
@@ -67,8 +70,8 @@ public class SecurityConfig {
                             auth.requestMatchers(HttpMethod.DELETE, openPaths).permitAll();
                         }
 
-                auth.anyRequest().authenticated();
-            })
+                    auth.anyRequest().authenticated();
+                })
                 .addFilterBefore(new JwtAuthFilter(jwtService, uds), UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
@@ -86,14 +89,12 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(org.springframework.core.env.Environment env) {
         CorsConfiguration config = new CorsConfiguration();
-        // Leer orígenes permitidos de propiedades o usar defaults locales
         String originsProp = env.getProperty("security.cors.allowed-origins",
                 "http://localhost:3000,http://localhost:4200");
         config.setAllowedOrigins(List.of(originsProp.split(",")));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setAllowCredentials(true);
-        // Exponer headers útiles
         config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
