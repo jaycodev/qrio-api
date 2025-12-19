@@ -1,6 +1,7 @@
 package com.qrio.shared.api;
 
 import com.qrio.shared.config.security.JwtService;
+import com.qrio.appAdmin.repository.AppAdminRepository;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final UserRepository userRepository;
+    private final AppAdminRepository appAdminRepository;
     private final Environment environment;
 
     @PostMapping("/login")
@@ -73,20 +75,82 @@ public class AuthController {
             .body(new LoginResponse(accessToken));
     }
 
+    @PostMapping("/admin/login")
+    public ResponseEntity<?> adminLogin(@RequestBody LoginRequest request) {
+        Authentication auth = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+
+        var appAdminOpt = appAdminRepository.findByEmail(request.getEmail());
+        if (appAdminOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        var admin = appAdminOpt.get();
+        java.util.Map<String, Object> claims = new java.util.HashMap<>();
+        claims.put("role", "APP_ADMIN");
+        claims.put("restaurantId", null);
+        claims.put("branchId", null);
+        claims.put("name", admin.getName());
+        String accessToken = jwtService.generateToken(admin.getEmail(), claims);
+        String refreshToken = jwtService.generateToken(admin.getEmail(), claims);
+
+        boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+        boolean secure = isProd;
+        String sameSite = isProd ? "None" : "Lax";
+
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
+            .httpOnly(true)
+            .secure(secure)
+            .sameSite(sameSite)
+            .path("/")
+            .maxAge(jwtService.getExpirationSeconds())
+            .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+            .httpOnly(true)
+            .secure(secure)
+            .sameSite(sameSite)
+            .path("/auth")
+            .maxAge(jwtService.getExpirationSeconds())
+            .build();
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body(new LoginResponse(accessToken));
+    }
+
     @GetMapping("/me")
     public ResponseEntity<?> me(@AuthenticationPrincipal UserDetails principal) {
         if (principal == null) {
             return ResponseEntity.status(401).build();
         }
-        User user = userRepository.findByEmail(principal.getUsername()).orElseThrow();
-        return ResponseEntity.ok(new MeResponse(
-                user.getId(),
-                user.getEmail(),
-                user.getName(),
-                user.getRole().name(),
-                user.getRestaurant() != null ? user.getRestaurant().getId() : null,
-                user.getBranch() != null ? user.getBranch().getId() : null
-        ));
+        var userOpt = userRepository.findByEmail(principal.getUsername());
+        if (userOpt.isPresent()) {
+            var user = userOpt.get();
+            return ResponseEntity.ok(new MeResponse(
+                    user.getId(),
+                    user.getEmail(),
+                    user.getName(),
+                    user.getRole().name(),
+                    user.getRestaurant() != null ? user.getRestaurant().getId() : null,
+                    user.getBranch() != null ? user.getBranch().getId() : null
+            ));
+        }
+
+        var adminOpt = appAdminRepository.findByEmail(principal.getUsername());
+        if (adminOpt.isPresent()) {
+            var admin = adminOpt.get();
+            return ResponseEntity.ok(new MeResponse(
+                    admin.getId(),
+                    admin.getEmail(),
+                    admin.getName(),
+                    "APP_ADMIN",
+                    null,
+                    null
+            ));
+        }
+        return ResponseEntity.status(401).build();
     }
 
     @PostMapping("/refresh")

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface AppAdminRepository extends CrudRepository<AppAdmin, Long> {
+    Optional<AppAdmin> findByEmail(String email);
     @Query("""
         SELECT 
             a.id AS id,

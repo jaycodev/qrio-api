@@ -67,6 +67,17 @@ public class ProductController {
         return ResponseEntity.ok(new ApiSuccess<>("Product updated successfully", result));
     }
 
+    @PatchMapping("/{id}/availability")
+    @Operation(summary = "Set product availability for a branch")
+    public ResponseEntity<ApiSuccess<Boolean>> setAvailability(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
+            @RequestParam Long branchId,
+            @RequestBody java.util.Map<String, Boolean> body) {
+        Boolean available = body.getOrDefault("available", false);
+        Boolean result = productService.setAvailability(id, branchId, available);
+        return ResponseEntity.ok(new ApiSuccess<>("Availability updated", result));
+    }
+
     @DeleteMapping("/{id}")
     @Operation(summary = "Delete a product by ID")
     public ResponseEntity<ApiSuccess<Boolean>> delete(

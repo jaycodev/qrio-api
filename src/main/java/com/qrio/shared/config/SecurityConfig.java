@@ -41,28 +41,34 @@ public class SecurityConfig {
                 .cors(cors -> {
                 })
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> {
-                    auth
-                            .requestMatchers(
-                                    "/",
-                                    "/auth/login",
-                                    "/auth/refresh",
-                                    "/v3/api-docs/**")
-                            .permitAll();
+            .authorizeHttpRequests(auth -> {
+                auth
+                    // Permitir preflight CORS en todas las rutas
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                    .requestMatchers(
+                        "/",
+                        "/auth/login",
+                        "/auth/admin/login",
+                        "/auth/refresh",
+                        "/v3/api-docs/**"
+                ).permitAll();
 
-                    auth.requestMatchers(request -> {
-                        String origin = request.getHeader("Origin");
-                        String method = request.getMethod();
-                        String uri = request.getRequestURI();
-                        boolean isFromAllowedOrigin = origin != null
-                                && origin.startsWith("https://qrio-site.vercel.app");
-                        boolean isAllowedMethod = "GET".equals(method) || "POST".equals(method) || "PUT".equals(method)
-                                || "DELETE".equals(method);
-                        boolean matchesPath = matcher.match("/products/**", uri) || matcher.match("/categories/**", uri)
-                                || matcher.match("/tables/**", uri) || matcher.match("/orders/**", uri)
-                                || matcher.match("/offers/**", uri) || matcher.match("/customers/**", uri);
-                        return isLocal || (isFromAllowedOrigin && isAllowedMethod && matchesPath);
-                    }).permitAll();
+                        if (isLocal) {
+                            // En local, permitir también métodos de escritura para endpoints seleccionados
+                            String[] openPaths = new String[]{
+                                    "/products", "/products/**",
+                                    "/categories", "/categories/**",
+                                    "/tables", "/tables/**",
+                                    "/orders", "/orders/**",
+                                    "/offers", "/offers/**",
+                                    "/customers", "/customers/**"
+                            };
+                            auth.requestMatchers(HttpMethod.GET, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.POST, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.PUT, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.PATCH, openPaths).permitAll();
+                            auth.requestMatchers(HttpMethod.DELETE, openPaths).permitAll();
+                        }
 
                     auth.anyRequest().authenticated();
                 })

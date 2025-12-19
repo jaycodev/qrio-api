@@ -39,10 +39,24 @@ public class DiningTableService {
         Branch branch = branchRepository.findById(request.branchId())
                 .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
 
+        // Compute next table number if not provided
+        Integer nextNumber = request.tableNumber();
+        if (nextNumber == null || nextNumber < 1) {
+            Integer max = diningTableRepository.findMaxTableNumber(branch.getId());
+            nextNumber = (max == null ? 0 : max) + 1;
+        }
+
+        // Generate QR code if not provided
+        String qrCode = request.qrCode();
+        if (qrCode == null || qrCode.isBlank()) {
+            qrCode = String.format("QR_BR%d_T%02d_%s", branch.getId(), nextNumber, java.util.UUID.randomUUID().toString().substring(0, 6).toUpperCase());
+        }
+
         DiningTable table = new DiningTable();
         table.setBranch(branch);
-        table.setTableNumber(request.tableNumber());
-        table.setQrCode(request.qrCode());
+        table.setTableNumber(nextNumber);
+        table.setFloor(request.floor());
+        table.setQrCode(qrCode);
 
         DiningTable saved = diningTableRepository.save(table);
         return toListResponse(saved);
@@ -60,6 +74,15 @@ public class DiningTableService {
         table.setTableNumber(request.tableNumber());
         table.setQrCode(request.qrCode());
 
+        DiningTable updated = diningTableRepository.save(table);
+        return toListResponse(updated);
+    }
+
+    @Transactional
+    public DiningTableListResponse updateFloor(Long id, Integer floor) {
+        DiningTable table = diningTableRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Dining table not found"));
+        table.setFloor(floor);
         DiningTable updated = diningTableRepository.save(table);
         return toListResponse(updated);
     }
