@@ -155,7 +155,6 @@ public class AuthController {
 
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(jakarta.servlet.http.HttpServletRequest request) {
-        // Leer refresh_token de cookie
         jakarta.servlet.http.Cookie[] cookies = request.getCookies();
         if (cookies == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         String refreshToken = null;
@@ -178,7 +177,6 @@ public class AuthController {
         claims.put("name", user.getName());
 
         String newAccess = jwtService.generateToken(email, claims);
-        // Rotar refresh token: emitir uno nuevo junto con el nuevo access token
         String newRefresh = jwtService.generateToken(email, claims);
         boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
         boolean secure = isProd;
