@@ -46,10 +46,16 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                             .requestMatchers(
                                     "/",
+                                    "/docs.html",
                                     "/auth/login",
                                     "/auth/admin/login",
                                     "/auth/refresh",
-                                    "/v3/api-docs/**")
+                                    "/v3/api-docs/**",
+                                    "/swagger-ui/**",
+                                    "/swagger-ui.html",
+                                    "/swagger-resources/**",
+                                    "/webjars/**",
+                                    "/favicon.ico")
                             .permitAll();
 
                     if (isLocal) {
@@ -81,7 +87,6 @@ public class SecurityConfig {
         if (isLocal) {
             config.setAllowedOriginPatterns(List.of("*"));
         } else {
-            // In non-local profiles require the allowed origins to be explicitly configured
             if (originsProp == null || originsProp.isBlank()) {
                 throw new IllegalStateException(
                         "security.cors.allowed-origins must be configured for non-local profiles");
@@ -89,7 +94,7 @@ public class SecurityConfig {
             config.setAllowedOrigins(List.of(originsProp.split(",")));
         }
 
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+          config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));

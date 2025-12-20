@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.http.ResponseCookie;
@@ -37,7 +36,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        Authentication auth = authenticationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
         java.util.Map<String, Object> claims = new java.util.HashMap<>();
@@ -46,38 +45,37 @@ public class AuthController {
         claims.put("branchId", user.getBranch() != null ? user.getBranch().getId() : null);
         claims.put("name", user.getName());
         String accessToken = jwtService.generateToken(user.getEmail(), claims);
-        // Refresh token: mismo sujeto, mayor expiración (doble). Aquí generamos uno simple; en producción usa lista de revocación/rotación
         String refreshToken = jwtService.generateToken(user.getEmail(), claims);
 
         boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
-        boolean secure = isProd; // En prod debe ser true (HTTPS)
-        String sameSite = isProd ? "None" : "Lax"; // None para cross-site en prod
+        boolean secure = isProd;
+        String sameSite = isProd ? "None" : "Lax";
 
         ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
-            .httpOnly(true)
-            .secure(secure)
-            .sameSite(sameSite)
-            .path("/")
-            .maxAge(jwtService.getExpirationSeconds())
-            .build();
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/")
+                .maxAge(jwtService.getExpirationSeconds())
+                .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
-            .httpOnly(true)
-            .secure(secure)
-            .sameSite(sameSite)
-            .path("/auth")
-            .maxAge(jwtService.getExpirationSeconds())
-            .build();
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/auth")
+                .maxAge(jwtService.getExpirationSeconds())
+                .build();
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
-            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-            .body(new LoginResponse(accessToken));
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(new LoginResponse(accessToken));
     }
 
     @PostMapping("/admin/login")
     public ResponseEntity<?> adminLogin(@RequestBody LoginRequest request) {
-        Authentication auth = authenticationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 
         var appAdminOpt = appAdminRepository.findByEmail(request.getEmail());
@@ -99,25 +97,25 @@ public class AuthController {
         String sameSite = isProd ? "None" : "Lax";
 
         ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
-            .httpOnly(true)
-            .secure(secure)
-            .sameSite(sameSite)
-            .path("/")
-            .maxAge(jwtService.getExpirationSeconds())
-            .build();
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/")
+                .maxAge(jwtService.getExpirationSeconds())
+                .build();
 
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
-            .httpOnly(true)
-            .secure(secure)
-            .sameSite(sameSite)
-            .path("/auth")
-            .maxAge(jwtService.getExpirationSeconds())
-            .build();
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/auth")
+                .maxAge(jwtService.getExpirationSeconds())
+                .build();
 
         return ResponseEntity.ok()
-            .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
-            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-            .body(new LoginResponse(accessToken));
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(new LoginResponse(accessToken));
     }
 
     @GetMapping("/me")
@@ -134,8 +132,7 @@ public class AuthController {
                     user.getName(),
                     user.getRole().name(),
                     user.getRestaurant() != null ? user.getRestaurant().getId() : null,
-                    user.getBranch() != null ? user.getBranch().getId() : null
-            ));
+                    user.getBranch() != null ? user.getBranch().getId() : null));
         }
 
         var adminOpt = appAdminRepository.findByEmail(principal.getUsername());
@@ -147,8 +144,7 @@ public class AuthController {
                     admin.getName(),
                     "APP_ADMIN",
                     null,
-                    null
-            ));
+                    null));
         }
         return ResponseEntity.status(401).build();
     }
@@ -156,19 +152,28 @@ public class AuthController {
     @PostMapping("/refresh")
     public ResponseEntity<?> refresh(jakarta.servlet.http.HttpServletRequest request) {
         jakarta.servlet.http.Cookie[] cookies = request.getCookies();
-        if (cookies == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (cookies == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         String refreshToken = null;
         for (jakarta.servlet.http.Cookie c : cookies) {
-            if ("refresh_token".equals(c.getName())) { refreshToken = c.getValue(); break; }
+            if ("refresh_token".equals(c.getName())) {
+                refreshToken = c.getValue();
+                break;
+            }
         }
-        if (refreshToken == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (refreshToken == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         String email;
-        try { email = jwtService.validateAndGetSubject(refreshToken); }
-        catch (Exception ex) { return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build(); }
+        try {
+            email = jwtService.validateAndGetSubject(refreshToken);
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
 
         User user = userRepository.findByEmail(email).orElse(null);
-        if (user == null) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        if (user == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
         java.util.Map<String, Object> claims = new java.util.HashMap<>();
         claims.put("role", user.getRole().name());
@@ -183,42 +188,42 @@ public class AuthController {
         String sameSite = isProd ? "None" : "Lax";
 
         ResponseCookie accessCookie = ResponseCookie.from("access_token", newAccess)
-            .httpOnly(true).secure(secure).sameSite(sameSite).path("/")
-            .maxAge(jwtService.getExpirationSeconds()).build();
+                .httpOnly(true).secure(secure).sameSite(sameSite).path("/")
+                .maxAge(jwtService.getExpirationSeconds()).build();
         ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", newRefresh)
-            .httpOnly(true).secure(secure).sameSite(sameSite).path("/auth")
-            .maxAge(jwtService.getExpirationSeconds()).build();
+                .httpOnly(true).secure(secure).sameSite(sameSite).path("/auth")
+                .maxAge(jwtService.getExpirationSeconds()).build();
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(new LoginResponse(newAccess));
     }
 
-        @PostMapping("/logout")
-        public ResponseEntity<?> logout() {
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout() {
         boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
         boolean secure = isProd;
         String sameSite = isProd ? "None" : "Lax";
 
         ResponseCookie clearAccess = ResponseCookie.from("access_token", "")
-            .httpOnly(true)
-            .secure(secure)
-            .sameSite(sameSite)
-            .path("/")
-            .maxAge(0)
-            .build();
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/")
+                .maxAge(0)
+                .build();
 
         ResponseCookie clearRefresh = ResponseCookie.from("refresh_token", "")
-            .httpOnly(true)
-            .secure(secure)
-            .sameSite(sameSite)
-            .path("/auth")
-            .maxAge(0)
-            .build();
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/auth")
+                .maxAge(0)
+                .build();
 
         return ResponseEntity.noContent()
-            .header(HttpHeaders.SET_COOKIE, clearAccess.toString())
-            .header(HttpHeaders.SET_COOKIE, clearRefresh.toString())
-            .build();
-        }
+                .header(HttpHeaders.SET_COOKIE, clearAccess.toString())
+                .header(HttpHeaders.SET_COOKIE, clearRefresh.toString())
+                .build();
+    }
 }
