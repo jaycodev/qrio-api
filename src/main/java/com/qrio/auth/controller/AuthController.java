@@ -1,7 +1,10 @@
-package com.qrio.shared.api;
+package com.qrio.auth.controller;
 
 import com.qrio.shared.config.security.JwtService;
 import com.qrio.appAdmin.repository.AppAdminRepository;
+import com.qrio.auth.dto.LoginRequest;
+import com.qrio.auth.dto.LoginResponse;
+import com.qrio.auth.dto.MeResponse;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.core.env.Environment;
 import java.util.Arrays;
-import com.qrio.shared.api.dto.LoginRequest;
-import com.qrio.shared.api.dto.LoginResponse;
-import com.qrio.shared.api.dto.MeResponse;
 
 @RestController
 @RequestMapping("/auth")

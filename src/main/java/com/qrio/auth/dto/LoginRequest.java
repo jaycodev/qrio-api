@@ -1,4 +1,4 @@
-package com.qrio.shared.api.dto;
+package com.qrio.auth.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
