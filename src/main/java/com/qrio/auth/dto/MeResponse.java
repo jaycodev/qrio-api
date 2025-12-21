@@ -1,4 +1,4 @@
-package com.qrio.shared.api.dto;
+package com.qrio.auth.dto;
 
 import lombok.Data;
 
