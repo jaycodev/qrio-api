@@ -2,47 +2,47 @@ SET search_path TO public;
 
 BEGIN;
 
+-- Password (Dueño123@)
 INSERT INTO users (email, password, name, phone, role, restaurant_id, status) VALUES
-('juan.perez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Juan Pérez', '+51987654321', 'DUEÑO', NULL, 'ACTIVO'),
-('maria.garcia@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'María García', '+51987654322', 'DUEÑO', NULL, 'ACTIVO'),
-('carlos.lopez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Carlos López', '+51987654323', 'DUEÑO', NULL, 'ACTIVO'),
-('ana.martinez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Ana Martínez', '+51987654324', 'DUEÑO', NULL, 'ACTIVO'),
-('luis.rodriguez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Luis Rodríguez', '+51987654325', 'DUEÑO', NULL, 'ACTIVO'),
-('carmen.sanchez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Carmen Sánchez', '+51987654326', 'DUEÑO', NULL, 'ACTIVO'),
-('pedro.ramirez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Pedro Ramírez', '+51987654327', 'DUEÑO', NULL, 'INACTIVO'),
-('laura.torres@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Laura Torres', '+51987654328', 'DUEÑO', NULL, 'ACTIVO'),
-('jorge.flores@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Jorge Flores', '+51987654329', 'DUEÑO', NULL, 'ACTIVO'),
-('patricia.vargas@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Patricia Vargas', '+51987654330', 'DUEÑO', NULL, 'ACTIVO'),
-('roberto.castro@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Roberto Castro', '+51987654331', 'DUEÑO', NULL, 'ACTIVO'),
-('elena.jimenez@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Elena Jiménez', '+51987654332', 'DUEÑO', NULL, 'ACTIVO'),
-('miguel.herrera@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Miguel Herrera', '+51987654333', 'DUEÑO', NULL, 'ACTIVO'),
-('isabel.morales@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Isabel Morales', '+51987654334', 'DUEÑO', NULL, 'ACTIVO'),
-('francisco.ruiz@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Francisco Ruiz', '+51987654335', 'DUEÑO', NULL, 'INACTIVO'),
-('rosa.diaz@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Rosa Díaz', '+51987654336', 'DUEÑO', NULL, 'ACTIVO'),
-('antonio.mendoza@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Antonio Mendoza', '+51987654337', 'DUEÑO', NULL, 'ACTIVO'),
-('lucia.reyes@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Lucía Reyes', '+51987654338', 'DUEÑO', NULL, 'ACTIVO'),
-('ricardo.vega@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Ricardo Vega', '+51987654339', 'DUEÑO', NULL, 'ACTIVO'),
-('sofia.campos@email.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Sofía Campos', '+51987654340', 'DUEÑO', NULL, 'ACTIVO');
+('juan.perez@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Juan Pérez', '+51987654321', 'DUEÑO', NULL, 'ACTIVO'),
+('maria.garcia@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'María García', '+51987654322', 'DUEÑO', NULL, 'ACTIVO'),
+('carlos.lopez@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Carlos López', '+51987654323', 'DUEÑO', NULL, 'ACTIVO'),
+('ana.martinez@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Ana Martínez', '+51987654324', 'DUEÑO', NULL, 'ACTIVO'),
+('luis.rodriguez@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Luis Rodríguez', '+51987654325', 'DUEÑO', NULL, 'ACTIVO'),
+('carmen.sanchez@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Carmen Sánchez', '+51987654326', 'DUEÑO', NULL, 'ACTIVO'),
+('pedro.ramirez@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Pedro Ramírez', '+51987654327', 'DUEÑO', NULL, 'INACTIVO'),
+('laura.torres@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Laura Torres', '+51987654328', 'DUEÑO', NULL, 'ACTIVO'),
+('jorge.flores@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Jorge Flores', '+51987654329', 'DUEÑO', NULL, 'ACTIVO'),
+('patricia.vargas@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Patricia Vargas', '+51987654330', 'DUEÑO', NULL, 'ACTIVO'),
+('roberto.castro@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Roberto Castro', '+51987654331', 'DUEÑO', NULL, 'ACTIVO'),
+('elena.jimenez@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Elena Jiménez', '+51987654332', 'DUEÑO', NULL, 'ACTIVO'),
+('miguel.herrera@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Miguel Herrera', '+51987654333', 'DUEÑO', NULL, 'ACTIVO'),
+('isabel.morales@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Isabel Morales', '+51987654334', 'DUEÑO', NULL, 'ACTIVO'),
+('francisco.ruiz@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Francisco Ruiz', '+51987654335', 'DUEÑO', NULL, 'INACTIVO'),
+('rosa.diaz@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Rosa Díaz', '+51987654336', 'DUEÑO', NULL, 'ACTIVO'),
+('antonio.mendoza@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Antonio Mendoza', '+51987654337', 'DUEÑO', NULL, 'ACTIVO'),
+('lucia.reyes@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Lucía Reyes', '+51987654338', 'DUEÑO', NULL, 'ACTIVO'),
+('ricardo.vega@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Ricardo Vega', '+51987654339', 'DUEÑO', NULL, 'ACTIVO'),
+('sofia.campos@email.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Sofía Campos', '+51987654340', 'DUEÑO', NULL, 'ACTIVO'),
+('tester@qrio.com', '$2a$12$t7M.vPpH00N2PM5rnXDcLOfPTt4z22cpm79SEV3BqEeJ9Olanzsfq', 'Usuario Prueba', '+51000000000', 'DUEÑO', NULL, 'ACTIVO');
 
--- Usuario de prueba con contraseña conocida (Qrio1234!)
-INSERT INTO users (email, password, name, phone, role, restaurant_id, status) VALUES
-('tester@qrio.com', '$2a$10$pASwuNgbTPBERwTUoE8YtOwdTebgXf2F.RRoDSolpWyYFsf7c3bHS', 'Usuario Prueba', '+51000000000', 'DUEÑO', NULL, 'ACTIVO');
-
--- Usuario APP_ADMIN de prueba (contraseña: Qrio1234!)
+-- Password (AppAdmin123@)
 INSERT INTO app_admins (name, email, password, status)
-VALUES ('App Admin', 'appadmin@qrio.com', '$2a$10$pASwuNgbTPBERwTUoE8YtOwdTebgXf2F.RRoDSolpWyYFsf7c3bHS', 'ACTIVO');
+VALUES ('App Admin', 'appadmin@qrio.com', '$2a$12$s.2gv5YkW1dkvoJNLFIQf.GgZfdI5y/G.sOw4Ue.UiYAp6IGUARTa', 'ACTIVO');
 
+-- Password (Cocina123@)
 INSERT INTO users (email, password, name, phone, role, restaurant_id, branch_id, status) VALUES
-('miguel.cocina@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Miguel Cocina', '+51912345702', 'COCINA', 1, 1, 'ACTIVO'),
-('roberto.parrillero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Roberto Parrillero', '+51912345706', 'COCINA', 4, 5, 'ACTIVO');
+('miguel.cocina@qrio.com', '$2a$12$61ySeyj44.H/ChOJu13dkOdtgVdXVWTlAOo3mlis0MOaN0T54jrTW', 'Miguel Cocina', '+51912345702', 'COCINA', 1, 1, 'ACTIVO'),
+('roberto.parrillero@qrio.com', '$2a$12$61ySeyj44.H/ChOJu13dkOdtgVdXVWTlAOo3mlis0MOaN0T54jrTW', 'Roberto Parrillero', '+51912345706', 'COCINA', 4, 5, 'ACTIVO');
 
+-- Password (Empleado123@)
 INSERT INTO users (email, password, name, phone, role, restaurant_id, branch_id, status) VALUES
-('carlos.mesero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Carlos Mesero', '+51912345700', 'EMPLEADO', 1, 1, 'ACTIVO'),
-('ana.cajera@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Ana Cajera', '+51912345701', 'EMPLEADO', 1, 1, 'ACTIVO'),
-('luis.mesero2@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Luis Mesero Sucursal', '+51912345703', 'EMPLEADO', 1, 2, 'ACTIVO'),
-('david.admin@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'David Admin Pizzería', '+51912345704', 'EMPLEADO', 2, 3, 'ACTIVO'),
-('elena.mesero@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Elena Mesero Sushi', '+51912345705', 'EMPLEADO', 3, 4, 'ACTIVO'),
-('sofia.barista@qrio.com', '$2a$10$slYQmyNdGzin7olVN3p5Be7DW5yIY666GB6h10pa.i7FC32aiUhSm', 'Sofia Barista', '+51912345707', 'EMPLEADO', 5, 6, 'ACTIVO');
+('carlos.mesero@qrio.com', '$2a$12$4rGKhe9.XJ88qCcZcbDy7OkewmughTn94A00kdHU8ffsEwwtH6AlO', 'Carlos Mesero', '+51912345700', 'EMPLEADO', 1, 1, 'ACTIVO'),
+('ana.cajera@qrio.com', '$2a$12$4rGKhe9.XJ88qCcZcbDy7OkewmughTn94A00kdHU8ffsEwwtH6AlO', 'Ana Cajera', '+51912345701', 'EMPLEADO', 1, 1, 'ACTIVO'),
+('luis.mesero2@qrio.com', '$2a$12$4rGKhe9.XJ88qCcZcbDy7OkewmughTn94A00kdHU8ffsEwwtH6AlO', 'Luis Mesero Sucursal', '+51912345703', 'EMPLEADO', 1, 2, 'ACTIVO'),
+('david.admin@qrio.com', '$2a$12$4rGKhe9.XJ88qCcZcbDy7OkewmughTn94A00kdHU8ffsEwwtH6AlO', 'David Admin Pizzería', '+51912345704', 'EMPLEADO', 2, 3, 'ACTIVO'),
+('elena.mesero@qrio.com', '$2a$12$4rGKhe9.XJ88qCcZcbDy7OkewmughTn94A00kdHU8ffsEwwtH6AlO', 'Elena Mesero Sushi', '+51912345705', 'EMPLEADO', 3, 4, 'ACTIVO'),
+('sofia.barista@qrio.com', '$2a$12$4rGKhe9.XJ88qCcZcbDy7OkewmughTn94A00kdHU8ffsEwwtH6AlO', 'Sofia Barista', '+51912345707', 'EMPLEADO', 5, 6, 'ACTIVO');
 
 INSERT INTO customers (firebase_uid, name, email, phone, status) VALUES
 ('customer_001', 'Alberto Suárez', 'alberto.suarez@email.com', '+51912345601', 'ACTIVO'),
