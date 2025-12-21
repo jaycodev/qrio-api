@@ -19,10 +19,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.core.env.Environment;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -35,11 +38,11 @@ public class AuthController {
     private final Environment environment;
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-        User user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-        java.util.Map<String, Object> claims = new java.util.HashMap<>();
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        User user = userRepository.findByEmail(request.email()).orElseThrow();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name());
         claims.put("restaurantId", user.getRestaurant() != null ? user.getRestaurant().getId() : null);
         claims.put("branchId", user.getBranch() != null ? user.getBranch().getId() : null);
@@ -74,17 +77,17 @@ public class AuthController {
     }
 
     @PostMapping("/admin/login")
-    public ResponseEntity<?> adminLogin(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> adminLogin(@Valid @RequestBody LoginRequest request) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+                new UsernamePasswordAuthenticationToken(request.email(), request.password()));
 
-        var appAdminOpt = appAdminRepository.findByEmail(request.getEmail());
+        var appAdminOpt = appAdminRepository.findByEmail(request.email());
         if (appAdminOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
         var admin = appAdminOpt.get();
-        java.util.Map<String, Object> claims = new java.util.HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("role", "APP_ADMIN");
         claims.put("restaurantId", null);
         claims.put("branchId", null);
@@ -175,7 +178,7 @@ public class AuthController {
         if (user == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
 
-        java.util.Map<String, Object> claims = new java.util.HashMap<>();
+        Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name());
         claims.put("restaurantId", user.getRestaurant() != null ? user.getRestaurant().getId() : null);
         claims.put("branchId", user.getBranch() != null ? user.getBranch().getId() : null);
