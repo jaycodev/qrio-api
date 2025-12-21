@@ -51,7 +51,7 @@ public interface BranchRepository extends CrudRepository<Branch, Long> {
             b.name AS branchName
         FROM Branch b
         WHERE b.restaurant.user.id = :userId
-        ORDER BY b.id DESC
+        ORDER BY b.restaurant.id DESC
     """)
     List<UserBranchResponse> findBranchesByUserId(Long userId);
 
@@ -66,7 +66,7 @@ public interface BranchRepository extends CrudRepository<Branch, Long> {
             WHERE ep.user.id = :userId
               AND (ep.branch.id = b.id OR ep.restaurant.id = b.restaurant.id)
         )
-        ORDER BY b.id DESC
+        ORDER BY b.restaurant.id DESC
     """)
     List<UserBranchResponse> findBranchesByEmployeeId(Long userId);
 
