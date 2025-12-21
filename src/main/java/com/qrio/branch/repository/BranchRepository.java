@@ -3,6 +3,7 @@ package com.qrio.branch.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import com.qrio.auth.dto.UserBranchResponse;
 import com.qrio.branch.dto.response.BranchDetailResponse;
 import com.qrio.branch.dto.response.BranchListResponse;
 import com.qrio.branch.model.Branch;
@@ -42,6 +43,32 @@ public interface BranchRepository extends CrudRepository<Branch, Long> {
         WHERE b.id = :id
     """)
     Optional<BranchDetailResponse> findDetailById(Long id);
+
+    @Query("""
+        SELECT
+            b.id AS id,
+            b.restaurant.name AS restaurantName,
+            b.name AS name
+        FROM Branch b
+        WHERE b.restaurant.user.id = :userId
+        ORDER BY b.id DESC
+    """)
+    List<UserBranchResponse> findBranchesByUserId(Long userId);
+
+    @Query("""
+        SELECT
+            b.id AS id,
+            b.restaurant.name AS restaurantName,
+            b.name AS name
+        FROM Branch b
+        WHERE EXISTS (
+            SELECT ep.id FROM EmployeePermission ep
+            WHERE ep.user.id = :userId
+              AND (ep.branch.id = b.id OR ep.restaurant.id = b.restaurant.id)
+        )
+        ORDER BY b.id DESC
+    """)
+    List<UserBranchResponse> findBranchesByEmployeeId(Long userId);
 
     @Query("""
         SELECT 
