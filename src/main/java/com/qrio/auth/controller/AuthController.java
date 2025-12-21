@@ -5,6 +5,8 @@ import com.qrio.appAdmin.repository.AppAdminRepository;
 import com.qrio.auth.dto.LoginRequest;
 import com.qrio.auth.dto.LoginResponse;
 import com.qrio.auth.dto.MeResponse;
+import com.qrio.auth.dto.UserBranchResponse;
+import com.qrio.branch.repository.BranchRepository;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.core.env.Environment;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -35,6 +38,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserRepository userRepository;
     private final AppAdminRepository appAdminRepository;
+    private final BranchRepository branchRepository;
     private final Environment environment;
 
     @PostMapping("/login")
@@ -133,9 +137,7 @@ public class AuthController {
                     user.getId(),
                     user.getEmail(),
                     user.getName(),
-                    user.getRole().name(),
-                    user.getRestaurant() != null ? user.getRestaurant().getId() : null,
-                    user.getBranch() != null ? user.getBranch().getId() : null));
+                    user.getRole().name()));
         }
 
         var adminOpt = appAdminRepository.findByEmail(principal.getUsername());
@@ -145,11 +147,35 @@ public class AuthController {
                     admin.getId(),
                     admin.getEmail(),
                     admin.getName(),
-                    "APP_ADMIN",
-                    null,
-                    null));
+                    "APP_ADMIN"));
         }
         return ResponseEntity.status(401).build();
+    }
+
+    @GetMapping("/branches")
+    public ResponseEntity<?> branches(@AuthenticationPrincipal UserDetails principal) {
+        if (principal == null) {
+            return ResponseEntity.status(401).build();
+        }
+
+        var userOpt = userRepository.findByEmail(principal.getUsername());
+        if (userOpt.isEmpty()) {
+            var adminOpt = appAdminRepository.findByEmail(principal.getUsername());
+            if (adminOpt.isPresent()) {
+                return ResponseEntity.ok(List.of());
+            }
+            return ResponseEntity.status(401).build();
+        }
+
+        var user = userOpt.get();
+        List<UserBranchResponse> list;
+        if ("DUEÑO".equals(user.getRole().name())) {
+            list = branchRepository.findBranchesByUserId(user.getId());
+        } else {
+            list = branchRepository.findBranchesByEmployeeId(user.getId());
+        }
+
+        return ResponseEntity.ok(list);
     }
 
     @PostMapping("/refresh")
