@@ -46,8 +46,9 @@ public interface BranchRepository extends CrudRepository<Branch, Long> {
 
     @Query("""
         SELECT
-            b.id AS id,
+            b.restaurant.id AS restaurantId,
             b.restaurant.name AS restaurantName,
+            b.id AS branchId,
             b.name AS branchName
         FROM Branch b
         WHERE b.restaurant.user.id = :userId
@@ -57,8 +58,9 @@ public interface BranchRepository extends CrudRepository<Branch, Long> {
 
     @Query("""
         SELECT
-            b.id AS id,
+            b.restaurant.id AS restaurantId,
             b.restaurant.name AS restaurantName,
+            b.id AS branchId,
             b.name AS branchName
         FROM Branch b
         WHERE EXISTS (
