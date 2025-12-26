@@ -16,6 +16,8 @@ import com.qrio.user.repository.UserRepository;
 import com.qrio.customer.dto.request.CreateCustomerRequest;
 import com.qrio.shared.type.Status;
 import com.qrio.shared.api.ApiError;
+import com.qrio.auth.dto.mobile.FirebaseAuthResponse;
+import com.qrio.auth.dto.mobile.FirebaseAuthResponseDto;
 import com.qrio.auth.dto.mobile.FirebaseLoginRequest;
 import com.qrio.auth.dto.mobile.LoginRequest;
 import com.qrio.auth.dto.mobile.LoginResponse;
@@ -54,8 +56,6 @@ public class AuthController {
     private final AppAdminRepository appAdminRepository;
     private final BranchRepository branchRepository;
     private final Environment environment;
-    private final FirebaseTokenVerifier firebaseTokenVerifier;
-
     private final CustomerService customerService;
 
     @PostMapping("/login")
@@ -278,12 +278,11 @@ public class AuthController {
     }
 
     @PostMapping("/firebase")
-    public ResponseEntity<?> firebaseAuth(@Valid @RequestBody FirebaseLoginRequest request) {
+    public ResponseEntity<FirebaseAuthResponseDto> firebaseAuth(@RequestBody Map<String, String> body) {
 
-        String firebaseToken = request.idToken();
-
+        String firebaseToken = body.get("firebaseToken");
         if (firebaseToken == null || firebaseToken.isBlank()) {
-            return ResponseEntity.badRequest().body("firebaseToken requerido");
+            return ResponseEntity.badRequest().build();
         }
 
         FirebaseToken decoded;
@@ -296,19 +295,23 @@ public class AuthController {
         String uid = decoded.getUid();
         String email = decoded.getEmail();
 
-        // 1️⃣ Crear / obtener Customer
-        Customer customer = customerService.firebaseAuth(uid, email);
+        // 1️⃣ Obtener o crear Customer
+        FirebaseAuthResponse serviceResponse = customerService.firebaseAuth(uid, email);
+        Customer customer = serviceResponse.customer();
+        boolean isNew = serviceResponse.isNew();
 
-        // 2️⃣ 🔥 CREAR JWT DEL BACKEND
+        // 2️⃣ Crear JWT backend
         String backendJwt = jwtService.generateToken(customer);
 
-        // 3️⃣ Respuesta final
-        return ResponseEntity.ok(
-                Map.of(
-                        "token", backendJwt,
-                        "customerId", customer.getId(),
-                        "email", customer.getEmail(),
-                        "name", customer.getName()));
+        // 3️⃣ Respuesta final tipada
+        FirebaseAuthResponseDto responseDto = new FirebaseAuthResponseDto(
+                backendJwt,
+                customer.getId(),
+                customer.getEmail(),
+                customer.getName(),
+                isNew);
+
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/token-info")
