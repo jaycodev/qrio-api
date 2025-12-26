@@ -16,6 +16,7 @@ import com.qrio.user.repository.UserRepository;
 import com.qrio.customer.dto.request.CreateCustomerRequest;
 import com.qrio.shared.type.Status;
 import com.qrio.shared.api.ApiError;
+import com.qrio.auth.dto.mobile.FirebaseAuthRequest;
 import com.qrio.auth.dto.mobile.FirebaseAuthResponse;
 import com.qrio.auth.dto.mobile.FirebaseAuthResponseDto;
 import com.qrio.auth.dto.mobile.FirebaseLoginRequest;
@@ -278,9 +279,9 @@ public class AuthController {
     }
 
     @PostMapping("/firebase")
-    public ResponseEntity<FirebaseAuthResponseDto> firebaseAuth(@RequestBody Map<String, String> body) {
+    public ResponseEntity<FirebaseAuthResponseDto> firebaseAuth(@RequestBody FirebaseAuthRequest body) {
 
-        String firebaseToken = body.get("firebaseToken");
+        String firebaseToken = body.getFirebaseToken();
         if (firebaseToken == null || firebaseToken.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
@@ -295,15 +296,12 @@ public class AuthController {
         String uid = decoded.getUid();
         String email = decoded.getEmail();
 
-        // 1️⃣ Obtener o crear Customer
         FirebaseAuthResponse serviceResponse = customerService.firebaseAuth(uid, email);
         Customer customer = serviceResponse.customer();
         boolean isNew = serviceResponse.isNew();
 
-        // 2️⃣ Crear JWT backend
         String backendJwt = jwtService.generateToken(customer);
 
-        // 3️⃣ Respuesta final tipada
         FirebaseAuthResponseDto responseDto = new FirebaseAuthResponseDto(
                 backendJwt,
                 customer.getId(),
