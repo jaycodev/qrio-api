@@ -49,6 +49,21 @@ public class OfferService {
             .toList();
     }
 
+    public List<OfferListResponse> getListByRestaurantId(Long restaurantId) {
+        List<OfferListResponse> offers = offerRepository.findListByRestaurantId(restaurantId);
+        return offers.stream()
+            .map(o -> new OfferListResponse(
+                o.id(),
+                o.code() != null ? o.code() : String.format("OF-%04d", o.id()),
+                o.restaurantId(),
+                o.title(),
+                o.description(),
+                o.offerDiscountPercentage(),
+                o.active()
+            ))
+            .toList();
+    }
+
     public OfferDetailResponse getDetailById(Long id) {
         OfferDetailResponse base = offerRepository.findDetailById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));

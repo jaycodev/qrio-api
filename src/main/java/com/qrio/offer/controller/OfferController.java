@@ -46,6 +46,18 @@ public class OfferController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/restaurant/{restaurantId}")
+    @Operation(summary = "List offers by restaurant ID")
+    public ResponseEntity<ApiSuccess<List<OfferListResponse>>> listByRestaurant(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long restaurantId) {
+        List<OfferListResponse> offers = offerService.getListByRestaurantId(restaurantId);
+        ApiSuccess<List<OfferListResponse>> response = new ApiSuccess<>(
+                offers.isEmpty() ? "No offers found for restaurant" : "Offers listed successfully",
+                offers);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get an offer by ID")
     public ResponseEntity<ApiSuccess<OfferDetailResponse>> get(
