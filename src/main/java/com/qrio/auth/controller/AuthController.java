@@ -1,12 +1,17 @@
 package com.qrio.auth.controller;
 
 import com.qrio.shared.config.security.JwtService;
+import com.qrio.shared.type.Status;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 import com.qrio.appAdmin.repository.AppAdminRepository;
 import com.qrio.auth.dto.LoginRequest;
 import com.qrio.auth.dto.LoginResponse;
 import com.qrio.auth.dto.MeResponse;
 import com.qrio.auth.dto.UserBranchResponse;
 import com.qrio.branch.repository.BranchRepository;
+import com.qrio.customer.model.Customer;
+import com.qrio.customer.repository.CustomerRepository;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +45,7 @@ public class AuthController {
     private final AppAdminRepository appAdminRepository;
     private final BranchRepository branchRepository;
     private final Environment environment;
+    private final CustomerRepository customerRepository;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
@@ -255,4 +261,47 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, clearRefresh.toString())
                 .build();
     }
+
+    @PostMapping("/firebase")
+    public ResponseEntity<?> firebaseAuth(@RequestBody Map<String, String> body) {
+
+        String firebaseToken = body.get("firebaseToken");
+        if (firebaseToken == null || firebaseToken.isBlank()) {
+            return ResponseEntity.badRequest().body("firebaseToken requerido");
+        }
+
+        FirebaseToken decoded;
+        try {
+            decoded = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String uid = decoded.getUid();
+        String email = decoded.getEmail();
+
+        Customer customer = customerRepository
+                .findByFirebaseUid(uid)
+                .orElse(null);
+
+        boolean isNew = false;
+
+        if (customer == null) {
+            customer = new Customer();
+            customer.setFirebaseUid(uid);
+            customer.setEmail(email);
+            customer.setStatus(Status.ACTIVO);
+            customerRepository.save(customer);
+            isNew = true;
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("customerId", customer.getId());
+        response.put("isNew", isNew);
+        response.put("name", customer.getName());
+        response.put("email", customer.getEmail());
+
+        return ResponseEntity.ok(response);
+    }
+
 }

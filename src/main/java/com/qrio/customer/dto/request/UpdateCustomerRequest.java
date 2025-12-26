@@ -16,6 +16,5 @@ public record UpdateCustomerRequest(
 
         @Size(max = 20, message = "Phone cannot exceed 20 characters") String phone,
 
-        Status status
-) {
+        Status status) {
 }
