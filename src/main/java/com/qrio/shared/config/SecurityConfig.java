@@ -49,6 +49,7 @@ public class SecurityConfig {
                                     "/docs.html",
                                     "/auth/login",
                                     "/auth/admin/login",
+                            "/auth/firebase",
                                     "/auth/refresh",
                                     "/v3/api-docs/**",
                                     "/swagger-ui/**",
@@ -57,6 +58,14 @@ public class SecurityConfig {
                                     "/webjars/**",
                                     "/favicon.ico")
                             .permitAll();
+
+                    // Open catalog endpoints for mobile (public GET)
+                    auth
+                        .requestMatchers(HttpMethod.GET,
+                            "/restaurants/**",
+                            "/branches/**",
+                            "/products/**")
+                        .permitAll();
 
                     if (isLocal) {
                         auth.anyRequest().permitAll();
