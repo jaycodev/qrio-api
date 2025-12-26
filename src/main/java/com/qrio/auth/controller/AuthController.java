@@ -10,9 +10,9 @@ import com.qrio.branch.repository.BranchRepository;
 
 import com.qrio.customer.service.CustomerService;
 import com.qrio.user.model.User;
+import com.qrio.customer.model.Customer;
 import com.qrio.user.repository.UserRepository;
-import com.qrio.customer.repository.CustomerRepository;
-import com.qrio.customer.service.CustomerService;
+
 import com.qrio.customer.dto.request.CreateCustomerRequest;
 import com.qrio.shared.type.Status;
 import com.qrio.shared.api.ApiError;
@@ -150,7 +150,7 @@ public class AuthController {
         var userOpt = userRepository.findByEmail(principal.getUsername());
         if (userOpt.isPresent()) {
             var user = userOpt.get();
-                return ResponseEntity.ok(new MeResponse(
+            return ResponseEntity.ok(new MeResponse(
                     user.getId(),
                     user.getEmail(),
                     user.getName(),
@@ -162,7 +162,7 @@ public class AuthController {
         var adminOpt = appAdminRepository.findByEmail(principal.getUsername());
         if (adminOpt.isPresent()) {
             var admin = adminOpt.get();
-                return ResponseEntity.ok(new MeResponse(
+            return ResponseEntity.ok(new MeResponse(
                     admin.getId(),
                     admin.getEmail(),
                     admin.getName(),
@@ -277,11 +277,11 @@ public class AuthController {
                 .build();
     }
 
-
     @PostMapping("/firebase")
-    public ResponseEntity<?> firebaseAuth(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> firebaseAuth(@Valid @RequestBody FirebaseLoginRequest request) {
 
-        String firebaseToken = body.get("firebaseToken");
+        String firebaseToken = request.idToken();
+
         if (firebaseToken == null || firebaseToken.isBlank()) {
             return ResponseEntity.badRequest().body("firebaseToken requerido");
         }
@@ -296,11 +296,20 @@ public class AuthController {
         String uid = decoded.getUid();
         String email = decoded.getEmail();
 
-        Map<String, Object> response = customerService.firebaseAuth(uid, email);
+        // 1️⃣ Crear / obtener Customer
+        Customer customer = customerService.firebaseAuth(uid, email);
 
-        return ResponseEntity.ok(response);
+        // 2️⃣ 🔥 CREAR JWT DEL BACKEND
+        String backendJwt = jwtService.generateToken(customer);
+
+        // 3️⃣ Respuesta final
+        return ResponseEntity.ok(
+                Map.of(
+                        "token", backendJwt,
+                        "customerId", customer.getId(),
+                        "email", customer.getEmail(),
+                        "name", customer.getName()));
     }
-
 
     @GetMapping("/token-info")
     public ResponseEntity<?> tokenInfo(HttpServletRequest request) {
@@ -310,7 +319,10 @@ public class AuthController {
             token = auth.substring(7);
         } else if (request.getCookies() != null) {
             for (jakarta.servlet.http.Cookie c : request.getCookies()) {
-                if ("access_token".equals(c.getName())) { token = c.getValue(); break; }
+                if ("access_token".equals(c.getName())) {
+                    token = c.getValue();
+                    break;
+                }
             }
         }
         if (token == null || token.isBlank()) {
@@ -325,7 +337,8 @@ public class AuthController {
             Long customerId = custNum != null ? custNum.longValue() : null;
             String email = claims.get("email", String.class);
             String name = claims.get("name", String.class);
-            return ResponseEntity.ok(new TokenInfoResponse(subject, role, customerId, email, name, claims.getIssuedAt(), claims.getExpiration()));
+            return ResponseEntity.ok(new TokenInfoResponse(subject, role, customerId, email, name, claims.getIssuedAt(),
+                    claims.getExpiration()));
         } catch (Exception ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ApiError(401, "Invalid token", "/auth/token-info"));

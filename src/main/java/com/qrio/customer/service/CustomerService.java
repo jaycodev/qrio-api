@@ -108,31 +108,19 @@ public class CustomerService {
     }
 
     @Transactional
-    public Map<String, Object> firebaseAuth(String firebaseUid, String email) {
+    public Customer firebaseAuth(String uid, String email) {
 
         Customer customer = customerRepository
-                .findByFirebaseUid(firebaseUid)
-                .orElse(null);
+                .findByFirebaseUid(uid)
+                .orElseGet(() -> {
+                    Customer c = new Customer();
+                    c.setFirebaseUid(uid);
+                    c.setEmail(email);
+                    c.setStatus(Status.ACTIVO);
+                    return customerRepository.save(c);
+                });
 
-        boolean isNew = false;
-
-        if (customer == null) {
-            customer = new Customer();
-            customer.setFirebaseUid(firebaseUid);
-            customer.setEmail(email);
-            customer.setStatus(Status.ACTIVO);
-            customer.setCreatedAt(LocalDateTime.now());
-            customer = customerRepository.save(customer);
-            isNew = true;
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("customerId", customer.getId());
-        response.put("isNew", isNew);
-        response.put("name", customer.getName());
-        response.put("email", customer.getEmail());
-
-        return response;
+        return customer;
     }
 
 }
