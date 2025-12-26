@@ -1,10 +1,14 @@
 package com.qrio.auth.controller;
 
 import com.qrio.shared.config.security.JwtService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 import com.qrio.shared.config.security.FirebaseTokenVerifier;
 import com.qrio.appAdmin.repository.AppAdminRepository;
 import com.qrio.auth.dto.web.UserBranchResponse;
 import com.qrio.branch.repository.BranchRepository;
+
+import com.qrio.customer.service.CustomerService;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
 import com.qrio.customer.repository.CustomerRepository;
@@ -51,7 +55,7 @@ public class AuthController {
     private final BranchRepository branchRepository;
     private final Environment environment;
     private final FirebaseTokenVerifier firebaseTokenVerifier;
-    private final CustomerRepository customerRepository;
+
     private final CustomerService customerService;
 
     @PostMapping("/login")
@@ -273,63 +277,30 @@ public class AuthController {
                 .build();
     }
 
-    // ---- Endpoints migrados desde com.qrio.shared.api.AuthController ----
 
     @PostMapping("/firebase")
-    public ResponseEntity<?> firebaseLogin(@RequestBody FirebaseLoginRequest request) {
-        try {
-            var decoded = firebaseTokenVerifier.verify(request.idToken());
-            String uid = decoded.getUid();
-            String email = decoded.getEmail();
-            String name = decoded.getName();
+    public ResponseEntity<?> firebaseAuth(@RequestBody Map<String, String> body) {
 
-            Map<String, Object> claims = new HashMap<>();
-            claims.put("role", "CUSTOMER");
-
-            var customerOpt = customerRepository.findByFirebaseUid(uid);
-            if (customerOpt.isPresent()) {
-                claims.put("customerId", customerOpt.get().getId());
-            } else {
-                String safeName = (name != null && !name.isBlank()) ? name : "Cliente";
-                String safeEmail = (email != null && !email.isBlank()) ? email : (uid + "@firebase.local");
-                var created = customerService.create(new CreateCustomerRequest(uid, safeName, safeEmail, null, Status.ACTIVO));
-                claims.put("customerId", created.id());
-            }
-            if (email != null) claims.put("email", email);
-            if (name != null) claims.put("name", name);
-
-            String accessToken = jwtService.generateToken(uid, claims);
-            String refreshToken = jwtService.generateToken(uid, claims);
-
-            boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
-            boolean secure = isProd;
-            String sameSite = isProd ? "None" : "Lax";
-
-            ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
-                    .httpOnly(true)
-                    .secure(secure)
-                    .sameSite(sameSite)
-                    .path("/")
-                    .maxAge(jwtService.getExpirationSeconds())
-                    .build();
-
-            ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
-                    .httpOnly(true)
-                    .secure(secure)
-                    .sameSite(sameSite)
-                    .path("/auth")
-                    .maxAge(jwtService.getExpirationSeconds())
-                    .build();
-
-            return ResponseEntity.ok()
-                    .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
-                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                    .body(new LoginResponse(accessToken));
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiError(401, "Invalid Firebase token", "/auth/firebase"));
+        String firebaseToken = body.get("firebaseToken");
+        if (firebaseToken == null || firebaseToken.isBlank()) {
+            return ResponseEntity.badRequest().body("firebaseToken requerido");
         }
+
+        FirebaseToken decoded;
+        try {
+            decoded = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+
+        String uid = decoded.getUid();
+        String email = decoded.getEmail();
+
+        Map<String, Object> response = customerService.firebaseAuth(uid, email);
+
+        return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/token-info")
     public ResponseEntity<?> tokenInfo(HttpServletRequest request) {
@@ -360,4 +331,5 @@ public class AuthController {
                     .body(new ApiError(401, "Invalid token", "/auth/token-info"));
         }
     }
+
 }

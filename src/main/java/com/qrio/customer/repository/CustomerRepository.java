@@ -12,32 +12,32 @@ import com.qrio.customer.model.Customer;
 import com.qrio.shared.response.OptionResponse;
 
 public interface CustomerRepository extends CrudRepository<Customer, Long> {
-    
+
     @Query("""
-        SELECT 
-            c.id AS id,
-            c.firebaseUid AS firebaseUid,
-            c.name AS name,
-            c.email AS email,
-            c.status AS status,
-            c.createdAt AS createdAt
-        FROM Customer c
-        ORDER BY c.createdAt DESC
-    """)
+                SELECT
+                    c.id AS id,
+                    c.firebaseUid AS firebaseUid,
+                    c.name AS name,
+                    c.email AS email,
+                    c.status AS status,
+                    c.createdAt AS createdAt
+                FROM Customer c
+                ORDER BY c.createdAt DESC
+            """)
     List<CustomerListResponse> findList();
 
     @Query("""
-        SELECT 
-            c.id AS id,
-            c.firebaseUid AS firebaseUid,
-            c.name AS name,
-            c.email AS email,
-            c.phone AS phone,
-            c.status AS status,
-            c.createdAt AS createdAt
-        FROM Customer c
-        WHERE c.id = :id
-    """)
+                SELECT
+                    c.id AS id,
+                    c.firebaseUid AS firebaseUid,
+                    c.name AS name,
+                    c.email AS email,
+                    c.phone AS phone,
+                    c.status AS status,
+                    c.createdAt AS createdAt
+                FROM Customer c
+                WHERE c.id = :id
+            """)
     Optional<CustomerDetailResponse> findDetailById(Long id);
 
     Optional<Customer> findByEmail(String email);
@@ -47,11 +47,12 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
     Optional<Customer> findByFirebaseUid(String firebaseUid);
 
     @Query("""
-        SELECT 
-            c.id AS value,
-            c.name AS label
-        FROM Customer c 
-        ORDER BY c.name ASC
-    """)
+                SELECT
+                    c.id AS value,
+                    c.name AS label
+                FROM Customer c
+                ORDER BY c.name ASC
+            """)
     List<OptionResponse> findForOptions();
+
 }
