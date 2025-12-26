@@ -53,6 +53,7 @@ import jakarta.servlet.http.HttpServletRequest;
 public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final FirebaseTokenVerifier firebaseTokenVerifier;
     private final UserRepository userRepository;
     private final AppAdminRepository appAdminRepository;
     private final BranchRepository branchRepository;
@@ -282,26 +283,33 @@ public class AuthController {
     public ResponseEntity<FirebaseAuthResponseDto> firebaseAuth(@RequestBody FirebaseAuthRequest body) {
 
         String firebaseToken = body.getFirebaseToken();
+        System.out.println("Token recibido: " + firebaseToken);
+
         if (firebaseToken == null || firebaseToken.isBlank()) {
             return ResponseEntity.badRequest().build();
         }
 
         FirebaseToken decoded;
         try {
-            decoded = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
+            // Usamos tu clase que inicializa Firebase Admin si no está inicializado
+            decoded = firebaseTokenVerifier.verify(firebaseToken);
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
 
         String uid = decoded.getUid();
         String email = decoded.getEmail();
 
+        // Llama a tu servicio para verificar si el usuario existe o es nuevo
         FirebaseAuthResponse serviceResponse = customerService.firebaseAuth(uid, email);
         Customer customer = serviceResponse.customer();
         boolean isNew = serviceResponse.isNew();
 
+        // Genera JWT propio de tu backend
         String backendJwt = jwtService.generateToken(customer);
 
+        // Construye la respuesta DTO
         FirebaseAuthResponseDto responseDto = new FirebaseAuthResponseDto(
                 backendJwt,
                 customer.getId(),
