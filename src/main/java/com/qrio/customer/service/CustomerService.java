@@ -1,6 +1,7 @@
 package com.qrio.customer.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -17,6 +18,8 @@ import com.qrio.shared.exception.ResourceNotFoundException;
 import com.qrio.shared.type.Status;
 
 import lombok.RequiredArgsConstructor;
+
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -103,4 +106,33 @@ public class CustomerService {
                 customer.getStatus(),
                 customer.getCreatedAt());
     }
+
+    @Transactional
+    public Map<String, Object> firebaseAuth(String firebaseUid, String email) {
+
+        Customer customer = customerRepository
+                .findByFirebaseUid(firebaseUid)
+                .orElse(null);
+
+        boolean isNew = false;
+
+        if (customer == null) {
+            customer = new Customer();
+            customer.setFirebaseUid(firebaseUid);
+            customer.setEmail(email);
+            customer.setStatus(Status.ACTIVO);
+            customer.setCreatedAt(LocalDateTime.now());
+            customer = customerRepository.save(customer);
+            isNew = true;
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("customerId", customer.getId());
+        response.put("isNew", isNew);
+        response.put("name", customer.getName());
+        response.put("email", customer.getEmail());
+
+        return response;
+    }
+
 }

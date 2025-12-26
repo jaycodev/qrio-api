@@ -12,6 +12,7 @@ import com.qrio.auth.dto.UserBranchResponse;
 import com.qrio.branch.repository.BranchRepository;
 import com.qrio.customer.model.Customer;
 import com.qrio.customer.repository.CustomerRepository;
+import com.qrio.customer.service.CustomerService;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +46,7 @@ public class AuthController {
     private final AppAdminRepository appAdminRepository;
     private final BranchRepository branchRepository;
     private final Environment environment;
-    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
@@ -280,26 +281,7 @@ public class AuthController {
         String uid = decoded.getUid();
         String email = decoded.getEmail();
 
-        Customer customer = customerRepository
-                .findByFirebaseUid(uid)
-                .orElse(null);
-
-        boolean isNew = false;
-
-        if (customer == null) {
-            customer = new Customer();
-            customer.setFirebaseUid(uid);
-            customer.setEmail(email);
-            customer.setStatus(Status.ACTIVO);
-            customerRepository.save(customer);
-            isNew = true;
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("customerId", customer.getId());
-        response.put("isNew", isNew);
-        response.put("name", customer.getName());
-        response.put("email", customer.getEmail());
+        Map<String, Object> response = customerService.firebaseAuth(uid, email);
 
         return ResponseEntity.ok(response);
     }
