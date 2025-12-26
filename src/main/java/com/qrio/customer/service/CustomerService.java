@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
+import com.qrio.auth.dto.mobile.FirebaseAuthResponse;
 import com.qrio.customer.dto.request.CreateCustomerRequest;
 import com.qrio.customer.dto.request.UpdateCustomerRequest;
 import com.qrio.customer.dto.response.CustomerDetailResponse;
@@ -108,19 +109,20 @@ public class CustomerService {
     }
 
     @Transactional
-    public Customer firebaseAuth(String uid, String email) {
+    public FirebaseAuthResponse firebaseAuth(String uid, String email) {
+        Customer customer = customerRepository.findByFirebaseUid(uid).orElse(null);
+        boolean isNew = false;
 
-        Customer customer = customerRepository
-                .findByFirebaseUid(uid)
-                .orElseGet(() -> {
-                    Customer c = new Customer();
-                    c.setFirebaseUid(uid);
-                    c.setEmail(email);
-                    c.setStatus(Status.ACTIVO);
-                    return customerRepository.save(c);
-                });
+        if (customer == null) {
+            customer = new Customer();
+            customer.setFirebaseUid(uid);
+            customer.setEmail(email);
+            customer.setStatus(Status.ACTIVO);
+            customer = customerRepository.save(customer);
+            isNew = true;
+        }
 
-        return customer;
+        return new FirebaseAuthResponse(customer, isNew);
     }
 
 }
