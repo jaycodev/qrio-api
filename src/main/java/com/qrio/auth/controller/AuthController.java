@@ -1,14 +1,22 @@
 package com.qrio.auth.controller;
 
 import com.qrio.shared.config.security.JwtService;
+import com.qrio.shared.config.security.FirebaseTokenVerifier;
 import com.qrio.appAdmin.repository.AppAdminRepository;
-import com.qrio.auth.dto.LoginRequest;
-import com.qrio.auth.dto.LoginResponse;
-import com.qrio.auth.dto.MeResponse;
-import com.qrio.auth.dto.UserBranchResponse;
+import com.qrio.auth.dto.web.UserBranchResponse;
 import com.qrio.branch.repository.BranchRepository;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
+import com.qrio.customer.repository.CustomerRepository;
+import com.qrio.customer.service.CustomerService;
+import com.qrio.customer.dto.request.CreateCustomerRequest;
+import com.qrio.shared.type.Status;
+import com.qrio.shared.api.ApiError;
+import com.qrio.auth.dto.mobile.FirebaseLoginRequest;
+import com.qrio.auth.dto.mobile.LoginRequest;
+import com.qrio.auth.dto.mobile.LoginResponse;
+import com.qrio.auth.dto.mobile.MeResponse;
+import com.qrio.auth.dto.mobile.TokenInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -29,6 +37,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -40,6 +50,9 @@ public class AuthController {
     private final AppAdminRepository appAdminRepository;
     private final BranchRepository branchRepository;
     private final Environment environment;
+    private final FirebaseTokenVerifier firebaseTokenVerifier;
+    private final CustomerRepository customerRepository;
+    private final CustomerService customerService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
@@ -133,21 +146,25 @@ public class AuthController {
         var userOpt = userRepository.findByEmail(principal.getUsername());
         if (userOpt.isPresent()) {
             var user = userOpt.get();
-            return ResponseEntity.ok(new MeResponse(
+                return ResponseEntity.ok(new MeResponse(
                     user.getId(),
                     user.getEmail(),
                     user.getName(),
-                    user.getRole().name()));
+                    user.getRole().name(),
+                    user.getRestaurant() != null ? user.getRestaurant().getId() : null,
+                    user.getBranch() != null ? user.getBranch().getId() : null));
         }
 
         var adminOpt = appAdminRepository.findByEmail(principal.getUsername());
         if (adminOpt.isPresent()) {
             var admin = adminOpt.get();
-            return ResponseEntity.ok(new MeResponse(
+                return ResponseEntity.ok(new MeResponse(
                     admin.getId(),
                     admin.getEmail(),
                     admin.getName(),
-                    "APP_ADMIN"));
+                    "APP_ADMIN",
+                    null,
+                    null));
         }
         return ResponseEntity.status(401).build();
     }
@@ -254,5 +271,93 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, clearAccess.toString())
                 .header(HttpHeaders.SET_COOKIE, clearRefresh.toString())
                 .build();
+    }
+
+    // ---- Endpoints migrados desde com.qrio.shared.api.AuthController ----
+
+    @PostMapping("/firebase")
+    public ResponseEntity<?> firebaseLogin(@RequestBody FirebaseLoginRequest request) {
+        try {
+            var decoded = firebaseTokenVerifier.verify(request.idToken());
+            String uid = decoded.getUid();
+            String email = decoded.getEmail();
+            String name = decoded.getName();
+
+            Map<String, Object> claims = new HashMap<>();
+            claims.put("role", "CUSTOMER");
+
+            var customerOpt = customerRepository.findByFirebaseUid(uid);
+            if (customerOpt.isPresent()) {
+                claims.put("customerId", customerOpt.get().getId());
+            } else {
+                String safeName = (name != null && !name.isBlank()) ? name : "Cliente";
+                String safeEmail = (email != null && !email.isBlank()) ? email : (uid + "@firebase.local");
+                var created = customerService.create(new CreateCustomerRequest(uid, safeName, safeEmail, null, Status.ACTIVO));
+                claims.put("customerId", created.id());
+            }
+            if (email != null) claims.put("email", email);
+            if (name != null) claims.put("name", name);
+
+            String accessToken = jwtService.generateToken(uid, claims);
+            String refreshToken = jwtService.generateToken(uid, claims);
+
+            boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+            boolean secure = isProd;
+            String sameSite = isProd ? "None" : "Lax";
+
+            ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
+                    .httpOnly(true)
+                    .secure(secure)
+                    .sameSite(sameSite)
+                    .path("/")
+                    .maxAge(jwtService.getExpirationSeconds())
+                    .build();
+
+            ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+                    .httpOnly(true)
+                    .secure(secure)
+                    .sameSite(sameSite)
+                    .path("/auth")
+                    .maxAge(jwtService.getExpirationSeconds())
+                    .build();
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                    .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                    .body(new LoginResponse(accessToken));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiError(401, "Invalid Firebase token", "/auth/firebase"));
+        }
+    }
+
+    @GetMapping("/token-info")
+    public ResponseEntity<?> tokenInfo(HttpServletRequest request) {
+        String token = null;
+        String auth = request.getHeader("Authorization");
+        if (auth != null && auth.startsWith("Bearer ")) {
+            token = auth.substring(7);
+        } else if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie c : request.getCookies()) {
+                if ("access_token".equals(c.getName())) { token = c.getValue(); break; }
+            }
+        }
+        if (token == null || token.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiError(401, "Missing token", "/auth/token-info"));
+        }
+        try {
+            Claims claims = jwtService.parseClaims(token);
+            String subject = claims.getSubject();
+            String role = claims.get("role", String.class);
+            Number custNum = claims.get("customerId", Number.class);
+            Long customerId = custNum != null ? custNum.longValue() : null;
+            String email = claims.get("email", String.class);
+            String name = claims.get("name", String.class);
+            return ResponseEntity.ok(new TokenInfoResponse(subject, role, customerId, email, name, claims.getIssuedAt(), claims.getExpiration()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiError(401, "Invalid token", "/auth/token-info"));
+        }
     }
 }
