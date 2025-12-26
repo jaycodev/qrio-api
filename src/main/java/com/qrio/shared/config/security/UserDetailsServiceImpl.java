@@ -1,6 +1,7 @@
 package com.qrio.shared.config.security;
 
 import com.qrio.appAdmin.repository.AppAdminRepository;
+import com.qrio.customer.repository.CustomerRepository;
 import com.qrio.shared.type.Status;
 import com.qrio.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,10 +18,12 @@ import java.util.List;
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
     private final AppAdminRepository appAdminRepository;
+    private final CustomerRepository customerRepository;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        var userOpt = userRepository.findByEmail(username);
+    public UserDetails loadUserByUsername(String subject) throws UsernameNotFoundException {
+        // Try employee/owner by email
+        var userOpt = userRepository.findByEmail(subject);
         if (userOpt.isPresent()) {
             var user = userOpt.get();
             var authorities = List.of(new SimpleGrantedAuthority("ROLE_" + user.getRole().name()));
@@ -32,7 +35,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     .build();
         }
 
-        var adminOpt = appAdminRepository.findByEmail(username);
+        // Try app admin by email
+        var adminOpt = appAdminRepository.findByEmail(subject);
         if (adminOpt.isPresent()) {
             var admin = adminOpt.get();
             var authorities = List.of(new SimpleGrantedAuthority("ROLE_APP_ADMIN"));
@@ -44,6 +48,20 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     .build();
         }
 
-        throw new UsernameNotFoundException("User or AppAdmin not found");
+        // Try customer by Firebase UID
+        var customerOpt = customerRepository.findByFirebaseUid(subject);
+        if (customerOpt.isPresent()) {
+            var customer = customerOpt.get();
+            var authorities = List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
+            // Password not used for JWT-based auth; set a placeholder
+            return org.springframework.security.core.userdetails.User
+                    .withUsername(customer.getFirebaseUid())
+                    .password("{noop}firebase")
+                    .authorities(authorities)
+                    .accountLocked(customer.getStatus() != Status.ACTIVO)
+                    .build();
+        }
+
+        throw new UsernameNotFoundException("Principal not found (user/admin/customer)");
     }
 }

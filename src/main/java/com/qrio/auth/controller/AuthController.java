@@ -1,20 +1,26 @@
 package com.qrio.auth.controller;
 
 import com.qrio.shared.config.security.JwtService;
-import com.qrio.shared.type.Status;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
+import com.qrio.shared.config.security.FirebaseTokenVerifier;
 import com.qrio.appAdmin.repository.AppAdminRepository;
-import com.qrio.auth.dto.LoginRequest;
-import com.qrio.auth.dto.LoginResponse;
-import com.qrio.auth.dto.MeResponse;
-import com.qrio.auth.dto.UserBranchResponse;
+import com.qrio.auth.dto.web.UserBranchResponse;
 import com.qrio.branch.repository.BranchRepository;
-import com.qrio.customer.model.Customer;
-import com.qrio.customer.repository.CustomerRepository;
+
 import com.qrio.customer.service.CustomerService;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
+import com.qrio.customer.repository.CustomerRepository;
+import com.qrio.customer.service.CustomerService;
+import com.qrio.customer.dto.request.CreateCustomerRequest;
+import com.qrio.shared.type.Status;
+import com.qrio.shared.api.ApiError;
+import com.qrio.auth.dto.mobile.FirebaseLoginRequest;
+import com.qrio.auth.dto.mobile.LoginRequest;
+import com.qrio.auth.dto.mobile.LoginResponse;
+import com.qrio.auth.dto.mobile.MeResponse;
+import com.qrio.auth.dto.mobile.TokenInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -35,6 +41,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/auth")
@@ -46,6 +54,8 @@ public class AuthController {
     private final AppAdminRepository appAdminRepository;
     private final BranchRepository branchRepository;
     private final Environment environment;
+    private final FirebaseTokenVerifier firebaseTokenVerifier;
+
     private final CustomerService customerService;
 
     @PostMapping("/login")
@@ -140,21 +150,25 @@ public class AuthController {
         var userOpt = userRepository.findByEmail(principal.getUsername());
         if (userOpt.isPresent()) {
             var user = userOpt.get();
-            return ResponseEntity.ok(new MeResponse(
+                return ResponseEntity.ok(new MeResponse(
                     user.getId(),
                     user.getEmail(),
                     user.getName(),
-                    user.getRole().name()));
+                    user.getRole().name(),
+                    user.getRestaurant() != null ? user.getRestaurant().getId() : null,
+                    user.getBranch() != null ? user.getBranch().getId() : null));
         }
 
         var adminOpt = appAdminRepository.findByEmail(principal.getUsername());
         if (adminOpt.isPresent()) {
             var admin = adminOpt.get();
-            return ResponseEntity.ok(new MeResponse(
+                return ResponseEntity.ok(new MeResponse(
                     admin.getId(),
                     admin.getEmail(),
                     admin.getName(),
-                    "APP_ADMIN"));
+                    "APP_ADMIN",
+                    null,
+                    null));
         }
         return ResponseEntity.status(401).build();
     }
@@ -263,6 +277,7 @@ public class AuthController {
                 .build();
     }
 
+
     @PostMapping("/firebase")
     public ResponseEntity<?> firebaseAuth(@RequestBody Map<String, String> body) {
 
@@ -284,6 +299,37 @@ public class AuthController {
         Map<String, Object> response = customerService.firebaseAuth(uid, email);
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/token-info")
+    public ResponseEntity<?> tokenInfo(HttpServletRequest request) {
+        String token = null;
+        String auth = request.getHeader("Authorization");
+        if (auth != null && auth.startsWith("Bearer ")) {
+            token = auth.substring(7);
+        } else if (request.getCookies() != null) {
+            for (jakarta.servlet.http.Cookie c : request.getCookies()) {
+                if ("access_token".equals(c.getName())) { token = c.getValue(); break; }
+            }
+        }
+        if (token == null || token.isBlank()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiError(401, "Missing token", "/auth/token-info"));
+        }
+        try {
+            Claims claims = jwtService.parseClaims(token);
+            String subject = claims.getSubject();
+            String role = claims.get("role", String.class);
+            Number custNum = claims.get("customerId", Number.class);
+            Long customerId = custNum != null ? custNum.longValue() : null;
+            String email = claims.get("email", String.class);
+            String name = claims.get("name", String.class);
+            return ResponseEntity.ok(new TokenInfoResponse(subject, role, customerId, email, name, claims.getIssuedAt(), claims.getExpiration()));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiError(401, "Invalid token", "/auth/token-info"));
+        }
     }
 
 }

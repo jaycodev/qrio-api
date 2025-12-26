@@ -1,4 +1,4 @@
-package com.qrio.auth.dto;
+package com.qrio.auth.dto.web;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;

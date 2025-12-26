@@ -3,7 +3,7 @@ package com.qrio.branch.repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
-import com.qrio.auth.dto.UserBranchResponse;
+import com.qrio.auth.dto.web.UserBranchResponse;
 import com.qrio.branch.dto.response.BranchDetailResponse;
 import com.qrio.branch.dto.response.BranchListResponse;
 import com.qrio.branch.model.Branch;

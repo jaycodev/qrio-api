@@ -1,4 +1,4 @@
-package com.qrio.auth.dto;
+package com.qrio.auth.dto.mobile;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
