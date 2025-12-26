@@ -64,7 +64,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                             "/restaurants/**",
                             "/branches/**",
-                            "/products/**")
+                            "/products/**",
+                            "/offers/**")
                         .permitAll();
 
                     if (isLocal) {
