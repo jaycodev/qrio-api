@@ -1,6 +1,7 @@
 package com.qrio.shared.config.security;
 
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.Keys;
 import javax.crypto.SecretKey;
 import java.util.Date;
@@ -43,6 +44,12 @@ public class JwtService {
             .parseSignedClaims(token)
             .getPayload()
             .getSubject();
+    }
+
+    public Claims parseClaims(String token) {
+        return Jwts.parser().verifyWith(key).build()
+            .parseSignedClaims(token)
+            .getPayload();
     }
 
     public long getExpirationSeconds() {
