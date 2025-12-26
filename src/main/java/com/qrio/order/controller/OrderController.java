@@ -63,6 +63,19 @@ public class OrderController {
         return ResponseEntity.status(status).body(response);
     }
 
+    @GetMapping("/status")
+    @Operation(summary = "List orders by branch and status")
+    public ResponseEntity<ApiSuccess<List<OrderListResponse>>> listByStatus(@RequestParam Long branchId,
+                                                                             @RequestParam String status) {
+        List<OrderListResponse> orders = orderService.getListByStatus(branchId, status);
+        ApiSuccess<List<OrderListResponse>> response = new ApiSuccess<>(
+                orders.isEmpty() ? "No orders found" : "Orders listed successfully",
+                orders);
+
+        HttpStatus responseStatus = orders.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK;
+        return ResponseEntity.status(responseStatus).body(response);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get an order by ID")
     public ResponseEntity<ApiSuccess<OrderDetailResponse>> get(

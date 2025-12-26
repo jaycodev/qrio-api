@@ -60,6 +60,32 @@ public class OrderService {
                 .toList();
     }
 
+        public List<OrderListResponse> getListByStatus(Long branchId, String status) {
+                com.qrio.order.model.type.OrderStatus orderStatus;
+                try {
+                        orderStatus = com.qrio.order.model.type.OrderStatus.valueOf(status);
+                } catch (IllegalArgumentException ex) {
+                        throw new IllegalArgumentException("Invalid order status: " + status);
+                }
+
+                List<OrderListResponse> list = orderRepository.findListByBranchAndStatus(branchId, orderStatus);
+                return list.stream()
+                                .map(o -> new OrderListResponse(
+                                                o.id(),
+                                                o.code() != null ? o.code() : String.format("OR-%04d", o.id()),
+                                                o.getTable().id(),
+                                                o.getTable().number(),
+                                                o.getCustomer().id(),
+                                                o.getCustomer().code() != null ? o.getCustomer().code() : String.format("CU-%04d", o.getCustomer().id()),
+                                                o.getCustomer().name(),
+                                                o.status(),
+                                                o.total(),
+                                                o.people(),
+                                                o.itemCount()
+                                ))
+                                .toList();
+        }
+
     public OrderFilterOptionsResponse getFilterOptions(Long branchId) {
         return new OrderFilterOptionsResponse(
                 diningTableRepository.findForOptions(branchId),
