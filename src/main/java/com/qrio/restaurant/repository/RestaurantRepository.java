@@ -31,6 +31,20 @@ public interface RestaurantRepository extends CrudRepository<Restaurant, Long> {
             r.code AS code,
             r.user.id AS userId,
             r.name AS name,
+            r.logoUrl AS logoUrl,
+            r.isActive AS isActive
+        FROM Restaurant r
+        WHERE r.user.id = :ownerId
+        ORDER BY r.id DESC
+    """)
+    List<RestaurantListResponse> findListByOwnerId(Long ownerId);
+
+    @Query("""
+        SELECT 
+            r.id AS id,
+            r.code AS code,
+            r.user.id AS userId,
+            r.name AS name,
             r.description AS description,
             r.logoUrl AS logoUrl,
             r.isActive AS isActive,

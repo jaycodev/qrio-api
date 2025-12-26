@@ -41,6 +41,18 @@ public class RestaurantController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/owner/{ownerId}")
+    @Operation(summary = "List restaurants by owner ID")
+    public ResponseEntity<ApiSuccess<List<RestaurantListResponse>>> listByOwner(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long ownerId) {
+        List<RestaurantListResponse> restaurants = restaurantService.getListByOwnerId(ownerId);
+        ApiSuccess<List<RestaurantListResponse>> response = new ApiSuccess<>(
+                restaurants.isEmpty() ? "No restaurants found for owner" : "Restaurants listed successfully",
+                restaurants);
+
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "Get a restaurant by ID")
     public ResponseEntity<ApiSuccess<RestaurantDetailResponse>> get(

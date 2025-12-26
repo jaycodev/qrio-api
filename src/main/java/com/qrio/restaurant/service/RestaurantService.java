@@ -31,6 +31,10 @@ public class RestaurantService {
         return restaurantRepository.findList();
     }
 
+    public List<RestaurantListResponse> getListByOwnerId(Long ownerId) {
+        return restaurantRepository.findListByOwnerId(ownerId);
+    }
+
     public RestaurantDetailResponse getDetailById(Long id) {
         return restaurantRepository.findDetailById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Restaurant not found with ID: " + id));
