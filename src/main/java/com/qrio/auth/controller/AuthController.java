@@ -1,19 +1,18 @@
 package com.qrio.auth.controller;
 
 import com.qrio.shared.config.security.JwtService;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseToken;
 import com.qrio.appAdmin.repository.AppAdminRepository;
 import com.qrio.auth.dto.web.UserBranchResponse;
 import com.qrio.branch.repository.BranchRepository;
 
-import com.qrio.customer.service.CustomerService;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
+import com.qrio.customer.repository.CustomerRepository;
+import com.qrio.shared.type.Status;
 import com.qrio.shared.api.ApiError;
 import com.qrio.auth.dto.mobile.LoginRequest;
-import com.qrio.auth.dto.mobile.LoginResponse;
-import com.qrio.auth.dto.mobile.MeResponse;
+import com.qrio.auth.dto.web.LoginResponse;
+import com.qrio.auth.dto.web.MeResponse;
 import com.qrio.auth.dto.mobile.TokenInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,6 +30,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.core.env.Environment;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +49,8 @@ public class AuthController {
     private final BranchRepository branchRepository;
     private final Environment environment;
 
-    private final CustomerService customerService;
+    private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
@@ -89,6 +90,57 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
                 .body(new LoginResponse(accessToken));
     }
+
+        @PostMapping("/customer/login")
+        public ResponseEntity<?> customerLogin(@Valid @RequestBody LoginRequest request) {
+        var customerOpt = customerRepository.findByEmail(request.email());
+        if (customerOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiError(401, "Invalid credentials", "/auth/customer/login"));
+        }
+        var customer = customerOpt.get();
+        if (!passwordEncoder.matches(request.password(), customer.getPassword())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ApiError(401, "Invalid credentials", "/auth/customer/login"));
+        }
+        if (customer.getStatus() != Status.ACTIVO) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ApiError(403, "Customer inactive", "/auth/customer/login"));
+        }
+
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", "CUSTOMER");
+        claims.put("customerId", customer.getId());
+        claims.put("email", customer.getEmail());
+        claims.put("name", customer.getName());
+        String accessToken = jwtService.generateToken(customer.getEmail(), claims);
+        String refreshToken = jwtService.generateToken(customer.getEmail(), claims);
+
+        boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+        boolean secure = isProd;
+        String sameSite = isProd ? "None" : "Lax";
+
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
+            .httpOnly(true)
+            .secure(secure)
+            .sameSite(sameSite)
+            .path("/")
+            .maxAge(jwtService.getExpirationSeconds())
+            .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+            .httpOnly(true)
+            .secure(secure)
+            .sameSite(sameSite)
+            .path("/auth")
+            .maxAge(jwtService.getExpirationSeconds())
+            .build();
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+            .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+            .body(new LoginResponse(accessToken));
+        }
 
     @PostMapping("/admin/login")
     public ResponseEntity<?> adminLogin(@Valid @RequestBody LoginRequest request) {
@@ -268,83 +320,6 @@ public class AuthController {
                 .header(HttpHeaders.SET_COOKIE, clearAccess.toString())
                 .header(HttpHeaders.SET_COOKIE, clearRefresh.toString())
                 .build();
-    }
-
-
-    @PostMapping("/firebase")
-    public ResponseEntity<?> firebaseAuth(@RequestBody(required = false) FirebaseLoginRequest request,
-                                          HttpServletRequest httpReq) {
-        String idToken = request != null ? request.idToken() : null;
-        if (idToken == null || idToken.isBlank()) {
-            // Fallbacks de compatibilidad para la expo: header o parámetro
-            String headerToken = httpReq.getHeader("X-Firebase-IdToken");
-            if (headerToken == null || headerToken.isBlank()) {
-                String authHeader = httpReq.getHeader("Authorization");
-                if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                    headerToken = authHeader.substring(7);
-                }
-            }
-            if (headerToken == null || headerToken.isBlank()) {
-                headerToken = httpReq.getParameter("idToken");
-            }
-            idToken = headerToken;
-        }
-        if (idToken == null || idToken.isBlank()) {
-            return ResponseEntity.badRequest().body("idToken requerido");
-        }
-
-        FirebaseToken decoded;
-        try {
-            decoded = firebaseTokenVerifier.verify(idToken);
-        } catch (IllegalStateException ise) {
-            // Configuración de credenciales Firebase ausente o inválida
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ise.getMessage());
-        } catch (Exception e) {
-            // idToken inválido o verificación fallida
-            String msg = e.getMessage() != null ? e.getMessage() : e.toString();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido: " + msg);
-        }
-
-        String uid = decoded.getUid();
-        String email = decoded.getEmail();
-
-        Map<String, Object> cust = customerService.firebaseAuth(uid, email);
-        Long customerId = (Long) cust.get("customerId");
-        String name = (String) cust.get("name");
-
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("role", "CUSTOMER");
-        claims.put("customerId", customerId);
-        claims.put("email", email);
-        claims.put("name", name);
-
-        String accessToken = jwtService.generateToken(uid, claims);
-        String refreshToken = jwtService.generateToken(uid, claims);
-
-        boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
-        boolean secure = isProd;
-        String sameSite = isProd ? "None" : "Lax";
-
-        ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/")
-                .maxAge(jwtService.getExpirationSeconds())
-                .build();
-
-        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
-                .httpOnly(true)
-                .secure(secure)
-                .sameSite(sameSite)
-                .path("/auth")
-                .maxAge(jwtService.getExpirationSeconds())
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                .body(new LoginResponse(accessToken));
     }
 
 

@@ -20,6 +20,7 @@ import com.qrio.shared.type.Status;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Service
 @RequiredArgsConstructor
@@ -27,6 +28,7 @@ import java.util.Map;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public List<CustomerListResponse> getList() {
@@ -41,20 +43,16 @@ public class CustomerService {
 
     @Transactional
     public CustomerListResponse create(CreateCustomerRequest request) {
-        if (customerRepository.existsByFirebaseUid(request.firebaseUid())) {
-            throw new IllegalArgumentException("Customer with this Firebase UID already exists");
-        }
-
         if (customerRepository.findByEmail(request.email()).isPresent()) {
             throw new IllegalArgumentException("Email is already in use");
         }
 
         Customer customer = new Customer();
-        customer.setFirebaseUid(request.firebaseUid());
         customer.setName(request.name());
         customer.setEmail(request.email());
         customer.setPhone(request.phone());
         customer.setStatus(request.status() != null ? request.status() : Status.ACTIVO);
+        customer.setPassword(passwordEncoder.encode(request.password()));
         customer.setCreatedAt(LocalDateTime.now());
 
         Customer saved = customerRepository.save(customer);
@@ -72,67 +70,38 @@ public class CustomerService {
                     throw new IllegalArgumentException("Email is already in use by another customer");
                 });
 
-        customer.setFirebaseUid(request.firebaseUid());
         customer.setName(request.name());
         customer.setEmail(request.email());
         customer.setPhone(request.phone());
         customer.setStatus(request.status() != null ? request.status() : customer.getStatus());
+        if (request.password() != null && !request.password().isBlank()) {
+            customer.setPassword(passwordEncoder.encode(request.password()));
+        }
 
         Customer updated = customerRepository.save(customer);
         return toListResponse(updated);
     }
 
-    @Transactional(readOnly = true)
-    public CustomerDetailResponse getByFirebaseUid(String firebaseUid) {
-        Customer customer = customerRepository.findByFirebaseUid(firebaseUid)
-                .orElseThrow(
-                        () -> new ResourceNotFoundException("Customer not found with Firebase UID: " + firebaseUid));
+        @Transactional(readOnly = true)
+        public CustomerDetailResponse getDetailByIdNoFirebase(Long id) {
+        Customer customer = customerRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
         return new CustomerDetailResponse(
-                customer.getId(),
-                customer.getFirebaseUid(),
-                customer.getName(),
-                customer.getEmail(),
-                customer.getPhone(),
-                customer.getStatus(),
-                customer.getCreatedAt());
-    }
+            customer.getId(),
+            customer.getName(),
+            customer.getEmail(),
+            customer.getPhone(),
+            customer.getStatus(),
+            customer.getCreatedAt());
+        }
 
     private CustomerListResponse toListResponse(Customer customer) {
         return new CustomerListResponse(
                 customer.getId(),
-                customer.getFirebaseUid(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getStatus(),
                 customer.getCreatedAt());
-    }
-
-    @Transactional
-    public Map<String, Object> firebaseAuth(String firebaseUid, String email) {
-
-        Customer customer = customerRepository
-                .findByFirebaseUid(firebaseUid)
-                .orElse(null);
-
-        boolean isNew = false;
-
-        if (customer == null) {
-            customer = new Customer();
-            customer.setFirebaseUid(firebaseUid);
-            customer.setEmail(email);
-            customer.setStatus(Status.ACTIVO);
-            customer.setCreatedAt(LocalDateTime.now());
-            customer = customerRepository.save(customer);
-            isNew = true;
-        }
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("customerId", customer.getId());
-        response.put("isNew", isNew);
-        response.put("name", customer.getName());
-        response.put("email", customer.getEmail());
-
-        return response;
     }
 
 }
