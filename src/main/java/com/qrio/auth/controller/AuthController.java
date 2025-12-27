@@ -3,7 +3,6 @@ package com.qrio.auth.controller;
 import com.qrio.shared.config.security.JwtService;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseToken;
-import com.qrio.shared.config.security.FirebaseTokenVerifier;
 import com.qrio.appAdmin.repository.AppAdminRepository;
 import com.qrio.auth.dto.web.UserBranchResponse;
 import com.qrio.branch.repository.BranchRepository;
@@ -11,12 +10,7 @@ import com.qrio.branch.repository.BranchRepository;
 import com.qrio.customer.service.CustomerService;
 import com.qrio.user.model.User;
 import com.qrio.user.repository.UserRepository;
-import com.qrio.customer.repository.CustomerRepository;
-import com.qrio.customer.service.CustomerService;
-import com.qrio.customer.dto.request.CreateCustomerRequest;
-import com.qrio.shared.type.Status;
 import com.qrio.shared.api.ApiError;
-import com.qrio.auth.dto.mobile.FirebaseLoginRequest;
 import com.qrio.auth.dto.mobile.LoginRequest;
 import com.qrio.auth.dto.mobile.LoginResponse;
 import com.qrio.auth.dto.mobile.MeResponse;
@@ -54,7 +48,6 @@ public class AuthController {
     private final AppAdminRepository appAdminRepository;
     private final BranchRepository branchRepository;
     private final Environment environment;
-    private final FirebaseTokenVerifier firebaseTokenVerifier;
 
     private final CustomerService customerService;
 
