@@ -279,26 +279,63 @@ public class AuthController {
 
 
     @PostMapping("/firebase")
-    public ResponseEntity<?> firebaseAuth(@RequestBody Map<String, String> body) {
-
-        String firebaseToken = body.get("firebaseToken");
-        if (firebaseToken == null || firebaseToken.isBlank()) {
-            return ResponseEntity.badRequest().body("firebaseToken requerido");
+    public ResponseEntity<?> firebaseAuth(@RequestBody FirebaseLoginRequest request) {
+        String idToken = request.idToken();
+        if (idToken == null || idToken.isBlank()) {
+            return ResponseEntity.badRequest().body("idToken requerido");
         }
 
         FirebaseToken decoded;
         try {
-            decoded = FirebaseAuth.getInstance().verifyIdToken(firebaseToken);
+            decoded = firebaseTokenVerifier.verify(idToken);
+        } catch (IllegalStateException ise) {
+            // Configuración de credenciales Firebase ausente o inválida
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ise.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            // idToken inválido o verificación fallida
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
         }
 
         String uid = decoded.getUid();
         String email = decoded.getEmail();
 
-        Map<String, Object> response = customerService.firebaseAuth(uid, email);
+        Map<String, Object> cust = customerService.firebaseAuth(uid, email);
+        Long customerId = (Long) cust.get("customerId");
+        String name = (String) cust.get("name");
 
-        return ResponseEntity.ok(response);
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", "CUSTOMER");
+        claims.put("customerId", customerId);
+        claims.put("email", email);
+        claims.put("name", name);
+
+        String accessToken = jwtService.generateToken(uid, claims);
+        String refreshToken = jwtService.generateToken(uid, claims);
+
+        boolean isProd = Arrays.asList(environment.getActiveProfiles()).contains("prod");
+        boolean secure = isProd;
+        String sameSite = isProd ? "None" : "Lax";
+
+        ResponseCookie accessCookie = ResponseCookie.from("access_token", accessToken)
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/")
+                .maxAge(jwtService.getExpirationSeconds())
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refresh_token", refreshToken)
+                .httpOnly(true)
+                .secure(secure)
+                .sameSite(sameSite)
+                .path("/auth")
+                .maxAge(jwtService.getExpirationSeconds())
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(new LoginResponse(accessToken));
     }
 
 
