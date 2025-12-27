@@ -49,7 +49,7 @@ public class SecurityConfig {
                                     "/docs.html",
                                     "/auth/login",
                                     "/auth/admin/login",
-                            "/auth/firebase",
+                                    "/auth/firebase",
                                     "/auth/refresh",
                                     "/v3/api-docs/**",
                                     "/swagger-ui/**",
@@ -61,11 +61,11 @@ public class SecurityConfig {
 
                     // Open catalog endpoints for mobile (public GET)
                     auth
-                        .requestMatchers(HttpMethod.GET,
-                            "/restaurants/**",
-                            "/branches/**",
-                            "/products/**")
-                        .permitAll();
+                            .requestMatchers(HttpMethod.GET,
+                                    "/restaurants/**",
+                                    "/branches/**",
+                                    "/products/**")
+                            .permitAll();
 
                     if (isLocal) {
                         auth.anyRequest().permitAll();
@@ -103,7 +103,7 @@ public class SecurityConfig {
             config.setAllowedOrigins(List.of(originsProp.split(",")));
         }
 
-          config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
         config.setAllowCredentials(true);
         config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));

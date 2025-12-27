@@ -38,16 +38,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             }
         }
 
+        // Dentro de doFilterInternal...
         if (token != null) {
             try {
-                String email = jwtService.validateAndGetSubject(token);
-                if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-                    UserDetails userDetails = userDetailsService.loadUserByUsername(email);
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                // Este método extrae el "Subject" que guardamos arriba (el UID)
+                String firebaseUid = jwtService.validateAndGetSubject(token);
+
+                if (firebaseUid != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+                    // Creamos la autenticación usando el UID directamente
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            firebaseUid, // <--- El Principal ahora es el UID
+                            null,
+                            java.util.Collections.emptyList());
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
-            } catch (Exception ignored) { }
+            } catch (Exception ignored) {
+            }
         }
         chain.doFilter(request, response);
     }

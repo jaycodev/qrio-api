@@ -1,7 +1,7 @@
 package com.qrio.auth.controller;
 
 import com.qrio.shared.config.security.JwtService;
-import com.google.firebase.auth.FirebaseAuth;
+
 import com.google.firebase.auth.FirebaseToken;
 import com.qrio.shared.config.security.FirebaseTokenVerifier;
 import com.qrio.appAdmin.repository.AppAdminRepository;
@@ -13,14 +13,13 @@ import com.qrio.user.model.User;
 import com.qrio.customer.model.Customer;
 import com.qrio.user.repository.UserRepository;
 
-import com.qrio.customer.dto.request.CreateCustomerRequest;
 import com.qrio.customer.dto.response.CustomerDetailResponse;
-import com.qrio.shared.type.Status;
+
 import com.qrio.shared.api.ApiError;
 import com.qrio.auth.dto.mobile.FirebaseAuthRequest;
 import com.qrio.auth.dto.mobile.FirebaseAuthResponse;
 import com.qrio.auth.dto.mobile.FirebaseAuthResponseDto;
-import com.qrio.auth.dto.mobile.FirebaseLoginRequest;
+
 import com.qrio.auth.dto.mobile.LoginRequest;
 import com.qrio.auth.dto.mobile.LoginResponse;
 import com.qrio.auth.dto.mobile.MeResponse;
@@ -324,6 +323,7 @@ public class AuthController {
 
     @GetMapping("/me-customer")
     public ResponseEntity<CustomerDetailResponse> getMyProfile(@AuthenticationPrincipal String firebaseUid) {
+        System.out.println("DEBUG: El UID recibido es: " + firebaseUid); // <--- MIRA ESTO EN LA CONSOLA DEL BACK
         // Si el principal es null, significa que no hay usuario autenticado
         if (firebaseUid == null || firebaseUid.isBlank()) {
             return ResponseEntity.status(401).build();

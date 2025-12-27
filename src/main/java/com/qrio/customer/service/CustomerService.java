@@ -1,7 +1,7 @@
 package com.qrio.customer.service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -20,8 +20,6 @@ import com.qrio.shared.exception.ResourceNotFoundException;
 import com.qrio.shared.type.Status;
 
 import lombok.RequiredArgsConstructor;
-
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor

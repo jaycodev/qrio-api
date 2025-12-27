@@ -1,8 +1,5 @@
 package com.qrio.customer.dto.request;
 
-import com.qrio.shared.type.Status;
-
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
