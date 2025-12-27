@@ -14,6 +14,7 @@ import com.qrio.customer.model.Customer;
 import com.qrio.user.repository.UserRepository;
 
 import com.qrio.customer.dto.request.CreateCustomerRequest;
+import com.qrio.customer.dto.response.CustomerDetailResponse;
 import com.qrio.shared.type.Status;
 import com.qrio.shared.api.ApiError;
 import com.qrio.auth.dto.mobile.FirebaseAuthRequest;
@@ -46,6 +47,7 @@ import java.util.List;
 import java.util.Map;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -318,6 +320,35 @@ public class AuthController {
                 isNew);
 
         return ResponseEntity.ok(responseDto);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<CustomerDetailResponse> getMyProfile(@AuthenticationPrincipal String firebaseUid) {
+        // Si el principal es null, significa que no hay usuario autenticado
+        if (firebaseUid == null || firebaseUid.isBlank()) {
+            return ResponseEntity.status(401).build();
+        }
+
+        // Busca al usuario en la base de datos usando el UID de Firebase
+        Optional<Customer> customerOpt = customerService.findByFirebaseUid(firebaseUid);
+
+        // Si existe, devuelve CustomerDetailResponse
+        if (customerOpt.isPresent()) {
+            Customer customer = customerOpt.get();
+            CustomerDetailResponse response = new CustomerDetailResponse(
+                    customer.getId(),
+                    customer.getFirebaseUid(),
+                    customer.getName(),
+                    customer.getEmail(),
+                    customer.getPhone(),
+                    customer.getStatus(),
+                    customer.getCreatedAt() // asegúrate de que Customer tenga este campo
+            );
+            return ResponseEntity.ok(response);
+        }
+
+        // Si no existe, devuelve 404
+        return ResponseEntity.status(404).body(null);
     }
 
     @GetMapping("/token-info")

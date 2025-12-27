@@ -3,6 +3,7 @@ package com.qrio.customer.service;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -88,6 +89,11 @@ public class CustomerService {
                 customer.getPhone(),
                 customer.getStatus(),
                 customer.getCreatedAt());
+    }
+
+    @Transactional(readOnly = true)
+    public Optional<Customer> findByFirebaseUid(String firebaseUid) {
+        return customerRepository.findByFirebaseUid(firebaseUid);
     }
 
     private CustomerListResponse toListResponse(Customer customer) {
