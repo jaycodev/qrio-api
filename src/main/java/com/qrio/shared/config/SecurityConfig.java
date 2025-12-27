@@ -66,7 +66,6 @@ public class SecurityConfig {
                                     "/branches/**",
                                     "/products/**")
                             .permitAll();
-
                     if (isLocal) {
                         auth.anyRequest().permitAll();
                     } else {

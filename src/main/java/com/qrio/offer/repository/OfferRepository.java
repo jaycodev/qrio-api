@@ -33,6 +33,21 @@ public interface OfferRepository extends CrudRepository<Offer, Long> {
             o.title AS title,
             o.description AS description,
             o.offerDiscountPercentage AS offerDiscountPercentage,
+            o.active AS active
+        FROM Offer o
+        WHERE o.restaurant.id = :restaurantId
+        ORDER BY o.id DESC
+    """)
+    List<OfferListResponse> findListByRestaurantId(Long restaurantId);
+
+    @Query("""
+        SELECT 
+            o.id AS id,
+            o.code AS code,
+            o.restaurant.id AS restaurantId,
+            o.title AS title,
+            o.description AS description,
+            o.offerDiscountPercentage AS offerDiscountPercentage,
             o.active AS active,
             
             NULL AS products
