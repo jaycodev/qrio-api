@@ -16,7 +16,6 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
     @Query("""
                 SELECT
                     c.id AS id,
-                    c.firebaseUid AS firebaseUid,
                     c.name AS name,
                     c.email AS email,
                     c.status AS status,
@@ -29,7 +28,6 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
     @Query("""
                 SELECT
                     c.id AS id,
-                    c.firebaseUid AS firebaseUid,
                     c.name AS name,
                     c.email AS email,
                     c.phone AS phone,
@@ -41,10 +39,6 @@ public interface CustomerRepository extends CrudRepository<Customer, Long> {
     Optional<CustomerDetailResponse> findDetailById(Long id);
 
     Optional<Customer> findByEmail(String email);
-
-    boolean existsByFirebaseUid(String firebaseUid);
-
-    Optional<Customer> findByFirebaseUid(String firebaseUid);
 
     @Query("""
                 SELECT

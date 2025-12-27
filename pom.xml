@@ -61,12 +61,6 @@
 			<scope>runtime</scope>
 		</dependency>
 
-		<!-- Firebase Admin SDK for verifying Firebase idTokens -->
-		<dependency>
-			<groupId>com.google.firebase</groupId>
-			<artifactId>firebase-admin</artifactId>
-			<version>9.2.0</version>
-		</dependency>
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -100,11 +94,7 @@
             <version>2.8.13</version>
         </dependency>
 
-        <dependency>
-    <groupId>com.google.firebase</groupId>
-    <artifactId>firebase-admin</artifactId>
-    <version>9.2.0</version>
-</dependency>
+        
 
 
 	</dependencies>

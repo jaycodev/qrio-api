@@ -48,19 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                     .build();
         }
 
-        // Try customer by Firebase UID
-        var customerOpt = customerRepository.findByFirebaseUid(subject);
-        if (customerOpt.isPresent()) {
-            var customer = customerOpt.get();
-            var authorities = List.of(new SimpleGrantedAuthority("ROLE_CUSTOMER"));
-            // Password not used for JWT-based auth; set a placeholder
-            return org.springframework.security.core.userdetails.User
-                    .withUsername(customer.getFirebaseUid())
-                    .password("{noop}firebase")
-                    .authorities(authorities)
-                    .accountLocked(customer.getStatus() != Status.ACTIVO)
-                    .build();
-        }
+        // Customer login via Firebase removed
 
         throw new UsernameNotFoundException("Principal not found (user/admin/customer)");
     }

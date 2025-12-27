@@ -6,7 +6,6 @@ import java.time.LocalDateTime;
 
 public record CustomerListResponse(
         Long id,
-        String firebaseUid,
         String name,
         String email,
         Status status,

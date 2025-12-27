@@ -48,12 +48,7 @@ public class CustomerController {
         return ResponseEntity.ok(new ApiSuccess<>("Customer found", customer));
     }
 
-    @GetMapping("/firebase/{uid}")
-    @Operation(summary = "Get a customer by Firebase UID")
-    public ResponseEntity<ApiSuccess<CustomerDetailResponse>> getByFirebaseUid(@PathVariable("uid") String uid) {
-        CustomerDetailResponse customer = customerService.getByFirebaseUid(uid);
-        return ResponseEntity.ok(new ApiSuccess<>("Customer found", customer));
-    }
+    // Endpoint por Firebase removido
 
     @PostMapping
     @Operation(summary = "Create a new customer")

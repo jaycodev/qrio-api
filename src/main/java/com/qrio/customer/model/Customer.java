@@ -33,14 +33,14 @@ public class Customer {
     @Column(insertable = false, updatable = false)
     private String code;
 
-    @Column(unique = true)
-    private String firebaseUid;
 
     private String name;
 
     private String email;
 
     private String phone;
+
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private Status status;
