@@ -48,7 +48,7 @@ public class ProductService {
     @Transactional
     public ProductListResponse create(CreateProductRequest request, Long branchId) {
         log.info("[ProductService] create called with branchId={}, categoryId={}, name={}",
-            branchId, request.categoryId(), request.name());
+                branchId, request.categoryId(), request.name());
         Category category = categoryRepository.findById(request.categoryId())
                 .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
 
@@ -65,20 +65,21 @@ public class ProductService {
 
         Product saved = productRepository.save(product);
         log.info("[ProductService] product saved id={}, computing availability for branchId={}",
-            saved.getId(), branchId);
+                saved.getId(), branchId);
 
         // Crear disponibilidad por sucursal si se envió branchId
         if (branchId != null) {
             Branch branch = branchRepository.findById(branchId)
-                .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
+                    .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
             com.qrio.product.model.ProductBranchAvailability pba = new com.qrio.product.model.ProductBranchAvailability();
             pba.setId(new com.qrio.product.model.ProductBranchAvailabilityId(saved.getId(), branchId));
             pba.setProduct(saved);
             pba.setBranch(branch);
             pba.setAvailable(true);
             productBranchAvailabilityRepository.save(pba);
-            log.info("[ProductService] ProductBranchAvailability created for productId={}, branchId={} (available=true)",
-                saved.getId(), branchId);
+            log.info(
+                    "[ProductService] ProductBranchAvailability created for productId={}, branchId={} (available=true)",
+                    saved.getId(), branchId);
         }
         return toListResponse(saved, branchId);
     }
@@ -113,23 +114,53 @@ public class ProductService {
     @Transactional
     public Boolean setAvailability(Long productId, Long branchId, boolean available) {
         Product product = productRepository.findById(productId)
-            .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
         Branch branch = branchRepository.findById(branchId)
-            .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
 
         var id = new com.qrio.product.model.ProductBranchAvailabilityId(productId, branchId);
         var pba = productBranchAvailabilityRepository.findById(id)
-            .orElseGet(() -> {
-                var np = new com.qrio.product.model.ProductBranchAvailability();
-                np.setId(id);
-                np.setProduct(product);
-                np.setBranch(branch);
-                return np;
-            });
+                .orElseGet(() -> {
+                    var np = new com.qrio.product.model.ProductBranchAvailability();
+                    np.setId(id);
+                    np.setProduct(product);
+                    np.setBranch(branch);
+                    return np;
+                });
         pba.setAvailable(available);
         productBranchAvailabilityRepository.save(pba);
-        log.info("[ProductService] setAvailability productId={}, branchId={}, available={}", productId, branchId, available);
+        log.info("[ProductService] setAvailability productId={}, branchId={}, available={}", productId, branchId,
+                available);
         return available;
+    }
+
+    @Transactional
+    public Boolean toggleAvailability(Long productId, Long branchId) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ResourceNotFoundException("Product not found"));
+        Branch branch = branchRepository.findById(branchId)
+                .orElseThrow(() -> new ResourceNotFoundException("Branch not found"));
+
+        var id = new com.qrio.product.model.ProductBranchAvailabilityId(productId, branchId);
+        var pba = productBranchAvailabilityRepository.findById(id)
+                .orElseGet(() -> {
+                    var np = new com.qrio.product.model.ProductBranchAvailability();
+                    np.setId(id);
+                    np.setProduct(product);
+                    np.setBranch(branch);
+                    np.setAvailable(false);
+                    return np;
+                });
+
+        Boolean current = pba.getAvailable();
+        if (current == null)
+            current = false;
+        Boolean newValue = !current;
+        pba.setAvailable(newValue);
+        productBranchAvailabilityRepository.save(pba);
+        log.info("[ProductService] toggleAvailability productId={}, branchId={}, newValue={}", productId, branchId,
+                newValue);
+        return newValue;
     }
 
     private ProductListResponse toListResponse(Product product, Long branchId) {
@@ -137,7 +168,7 @@ public class ProductService {
         Boolean available;
         if (branchId != null) {
             java.util.Optional<Boolean> availOpt = productBranchAvailabilityRepository
-                .findAvailabilityByProductAndBranch(product.getId(), branchId);
+                    .findAvailabilityByProductAndBranch(product.getId(), branchId);
             available = availOpt.orElse(false);
             log.info("[ProductService] availability lookup result={}, available={}", availOpt.orElse(null), available);
         } else {
