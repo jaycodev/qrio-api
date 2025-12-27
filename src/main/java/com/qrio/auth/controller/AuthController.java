@@ -308,7 +308,8 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ise.getMessage());
         } catch (Exception e) {
             // idToken inválido o verificación fallida
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido");
+            String msg = e.getMessage() != null ? e.getMessage() : e.toString();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Token inválido: " + msg);
         }
 
         String uid = decoded.getUid();
