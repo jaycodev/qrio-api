@@ -322,7 +322,7 @@ public class AuthController {
         return ResponseEntity.ok(responseDto);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/me-customer")
     public ResponseEntity<CustomerDetailResponse> getMyProfile(@AuthenticationPrincipal String firebaseUid) {
         // Si el principal es null, significa que no hay usuario autenticado
         if (firebaseUid == null || firebaseUid.isBlank()) {
