@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,6 +65,21 @@ public class OfferController {
             @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id) {
         OfferDetailResponse offer = offerService.getDetailById(id);
         return ResponseEntity.ok(new ApiSuccess<>("Offer found", offer));
+    }
+
+    @PatchMapping("/{id}/active")
+    @Operation(summary = "Set or toggle offer active state")
+    public ResponseEntity<ApiSuccess<Boolean>> setActive(
+            @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
+            @RequestBody(required = false) java.util.Map<String, Boolean> body) {
+        Boolean result;
+        if (body == null || !body.containsKey("active")) {
+            result = offerService.toggleActive(id);
+        } else {
+            Boolean active = body.getOrDefault("active", false);
+            result = offerService.setActive(id, active);
+        }
+        return ResponseEntity.ok(new ApiSuccess<>("Offer active state updated", result));
     }
 
     @PostMapping

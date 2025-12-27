@@ -37,16 +37,15 @@ public class OfferService {
     public List<OfferListResponse> getList() {
         List<OfferListResponse> offers = offerRepository.findList();
         return offers.stream()
-            .map(o -> new OfferListResponse(
-                o.id(),
-                o.code() != null ? o.code() : String.format("OF-%04d", o.id()),
-                o.restaurantId(),
-                o.title(),
-                o.description(),
-                o.offerDiscountPercentage(),
-                o.active()
-            ))
-            .toList();
+                .map(o -> new OfferListResponse(
+                        o.id(),
+                        o.code() != null ? o.code() : String.format("OF-%04d", o.id()),
+                        o.restaurantId(),
+                        o.title(),
+                        o.description(),
+                        o.offerDiscountPercentage(),
+                        o.active()))
+                .toList();
     }
 
     public List<OfferListResponse> getListByRestaurantId(Long restaurantId) {
@@ -69,15 +68,14 @@ public class OfferService {
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));
         String code = base.code() != null ? base.code() : String.format("OF-%04d", base.id());
         OfferDetailResponse normalized = new OfferDetailResponse(
-            base.id(),
-            code,
-            base.restaurantId(),
-            base.title(),
-            base.description(),
-            base.offerDiscountPercentage(),
-            base.active(),
-            null
-        );
+                base.id(),
+                code,
+                base.restaurantId(),
+                base.title(),
+                base.description(),
+                base.offerDiscountPercentage(),
+                base.active(),
+                null);
         return normalized.withProducts(offerProductRepository.findOfferProductsByOfferId(id));
     }
 
@@ -97,7 +95,8 @@ public class OfferService {
 
         for (CreateOfferProductRequest productDto : request.products()) {
             Product product = productRepository.findById(productDto.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productDto.productId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Product not found with ID: " + productDto.productId()));
 
             OfferProduct offerProduct = new OfferProduct();
             offerProduct.setOffer(saved);
@@ -126,7 +125,8 @@ public class OfferService {
 
         for (UpdateOfferProductRequest productDto : request.products()) {
             Product product = productRepository.findById(productDto.productId())
-                    .orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + productDto.productId()));
+                    .orElseThrow(() -> new ResourceNotFoundException(
+                            "Product not found with ID: " + productDto.productId()));
 
             OfferProduct offerProduct = new OfferProduct();
             offerProduct.setOffer(updated);
@@ -156,5 +156,27 @@ public class OfferService {
                 .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));
         offerProductRepository.deleteAllByOffer(offer);
         offerRepository.delete(offer);
+    }
+
+    @Transactional
+    public Boolean setActive(Long id, boolean active) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));
+        offer.setActive(active);
+        Offer saved = offerRepository.save(offer);
+        return saved.getActive();
+    }
+
+    @Transactional
+    public Boolean toggleActive(Long id) {
+        Offer offer = offerRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Offer not found with ID: " + id));
+        Boolean current = offer.getActive();
+        if (current == null)
+            current = false;
+        Boolean newVal = !current;
+        offer.setActive(newVal);
+        Offer saved = offerRepository.save(offer);
+        return saved.getActive();
     }
 }

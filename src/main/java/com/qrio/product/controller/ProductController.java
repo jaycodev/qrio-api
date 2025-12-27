@@ -72,7 +72,12 @@ public class ProductController {
     public ResponseEntity<ApiSuccess<Boolean>> setAvailability(
             @PathVariable @Min(value = 1, message = ValidationMessages.ID_MIN_VALUE) Long id,
             @RequestParam Long branchId,
-            @RequestBody java.util.Map<String, Boolean> body) {
+            @RequestBody(required = false) java.util.Map<String, Boolean> body) {
+        if (body == null || !body.containsKey("available")) {
+            Boolean result = productService.toggleAvailability(id, branchId);
+            return ResponseEntity.ok(new ApiSuccess<>("Availability updated", result));
+        }
+
         Boolean available = body.getOrDefault("available", false);
         Boolean result = productService.setAvailability(id, branchId, available);
         return ResponseEntity.ok(new ApiSuccess<>("Availability updated", result));
