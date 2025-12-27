@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Verificador de tokens de Firebase configurable por properties.
@@ -46,9 +48,33 @@ public class FirebaseTokenVerifier {
                 throw new IllegalStateException("Configure security.firebase.credentials-path o GOOGLE_APPLICATION_CREDENTIALS");
             }
 
-            // Soporte de credenciales inline en properties: si parece JSON, úsalo directo
+            // Soporte de credenciales inline en properties
             if (path.trim().startsWith("{")) {
-                credStream = new ByteArrayInputStream(path.getBytes(StandardCharsets.UTF_8));
+                // Detectar si es Service Account o google-services.json de cliente
+                String json = path.trim();
+                ObjectMapper mapper = new ObjectMapper();
+                JsonNode node = mapper.readTree(json);
+                boolean isServiceAccount = node.has("type") && "service_account".equals(node.get("type").asText());
+                boolean isClientConfig = node.has("project_info");
+
+                if (isServiceAccount) {
+                    // Usar credenciales del Service Account
+                    credStream = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+                } else if (isClientConfig) {
+                    // Inicializar solo con projectId para verificar tokens (no requiere claves privadas)
+                    String projectId = node.path("project_info").path("project_id").asText(null);
+                    if (projectId == null || projectId.isBlank()) {
+                        throw new IllegalStateException("project_id faltante en google-services.json");
+                    }
+                    FirebaseOptions options = FirebaseOptions.builder()
+                            .setProjectId(projectId)
+                            .build();
+                    FirebaseApp.initializeApp(options);
+                    initialized = true;
+                    return;
+                } else {
+                    throw new IllegalStateException("Credenciales Firebase inline no reconocidas: use Service Account o google-services.json");
+                }
             } else if (path.startsWith("classpath:")) {
                 Resource res = resourceLoader.getResource(path);
                 credStream = res.getInputStream();
