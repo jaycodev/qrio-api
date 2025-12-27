@@ -13,6 +13,8 @@ import org.springframework.stereotype.Component;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
 
 /**
  * Verificador de tokens de Firebase configurable por properties.
@@ -44,7 +46,10 @@ public class FirebaseTokenVerifier {
                 throw new IllegalStateException("Configure security.firebase.credentials-path o GOOGLE_APPLICATION_CREDENTIALS");
             }
 
-            if (path.startsWith("classpath:")) {
+            // Soporte de credenciales inline en properties: si parece JSON, úsalo directo
+            if (path.trim().startsWith("{")) {
+                credStream = new ByteArrayInputStream(path.getBytes(StandardCharsets.UTF_8));
+            } else if (path.startsWith("classpath:")) {
                 Resource res = resourceLoader.getResource(path);
                 credStream = res.getInputStream();
             } else {
