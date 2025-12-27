@@ -64,20 +64,12 @@ public class CustomerService {
 
     @Transactional
     public CustomerListResponse update(Long id, UpdateCustomerRequest request) {
+
         Customer customer = customerRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer not found"));
+                .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        customerRepository.findByEmail(request.email())
-                .filter(c -> !c.getId().equals(id))
-                .ifPresent(c -> {
-                    throw new IllegalArgumentException("Email is already in use by another customer");
-                });
-
-        customer.setFirebaseUid(request.firebaseUid());
         customer.setName(request.name());
-        customer.setEmail(request.email());
         customer.setPhone(request.phone());
-        customer.setStatus(request.status() != null ? request.status() : customer.getStatus());
 
         Customer updated = customerRepository.save(customer);
         return toListResponse(updated);
