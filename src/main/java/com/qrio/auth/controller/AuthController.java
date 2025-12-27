@@ -272,8 +272,23 @@ public class AuthController {
 
 
     @PostMapping("/firebase")
-    public ResponseEntity<?> firebaseAuth(@RequestBody FirebaseLoginRequest request) {
-        String idToken = request.idToken();
+    public ResponseEntity<?> firebaseAuth(@RequestBody(required = false) FirebaseLoginRequest request,
+                                          HttpServletRequest httpReq) {
+        String idToken = request != null ? request.idToken() : null;
+        if (idToken == null || idToken.isBlank()) {
+            // Fallbacks de compatibilidad para la expo: header o parámetro
+            String headerToken = httpReq.getHeader("X-Firebase-IdToken");
+            if (headerToken == null || headerToken.isBlank()) {
+                String authHeader = httpReq.getHeader("Authorization");
+                if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    headerToken = authHeader.substring(7);
+                }
+            }
+            if (headerToken == null || headerToken.isBlank()) {
+                headerToken = httpReq.getParameter("idToken");
+            }
+            idToken = headerToken;
+        }
         if (idToken == null || idToken.isBlank()) {
             return ResponseEntity.badRequest().body("idToken requerido");
         }
